@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/Arturr-H/Chess/issues"
   },
-  "homepage": "https://github.com/Arturr-H/Chess#readme"
+  "homepage": "https://github.com/Arturr-H/Chess#readme",
+  "dependencies": {
+    "typescript": "^4.9.5"
+  }
 }
