@@ -8,5 +8,11 @@ pub trait ChessPiece {
     /// which are the "move request". Will check if
     /// move will cause own color to get checked, if
     /// so, return false
-    fn can_move(&self, move_: (i8, i8), board: &Board) -> bool;
+    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool;
+
+    /// Get all possible moves on the board, relative to the piece
+    fn get_moves_local(&self) -> Vec<(i8, i8)>;
+
+    /// Get color of piece
+    fn is_white(&self) -> bool;
 }
