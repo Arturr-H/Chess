@@ -1,5 +1,54 @@
+:root {
+    --tile-1: #EEEED2;
+    --tile-2: #769656;
+}
+
+/* Html elements */
 html, body {
     background: #fff;
     padding: 0;
     margin: 0;
+
+    font-family: "Bebas neue", sans-serif;
+
+    display: flex;
+    justify-content: center;
+        align-items: center;
+
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Board */
+.board {
+    width: 50vmax;
+    aspect-ratio: 1;
+    border-radius: 1vmax;
+
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    overflow: hidden;
+
+    border: 0.2vmax black solid;
+}.board > .row {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+
+    width: 100%;
+    height: 100%;
+}.board > .row > .tile {
+    width: 100%;
+    height: 100%;
+
+    background: var(--tile-1);
+}.board > .row > .tile:hover {
+    filter: brightness(90%);
+    outline: 0.2vmax solid black;
+}.board > .row:nth-child(odd) > .tile:nth-child(odd), .board > .row:nth-child(even) > .tile:nth-child(even) {
+    background: var(--tile-2);
+}.board > .row:nth-child(odd) > .tile:nth-child(odd):hover, .board > .row:nth-child(even) > .tile:nth-child(even):hover {
+    filter: brightness(90%);
+    outline: 0.2vmax solid black;
 }
