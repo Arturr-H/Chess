@@ -27,7 +27,26 @@ pub trait ChessPiece {
     /// which are the "move request". Will check if
     /// move will cause own color to get checked, if
     /// so, return false
-    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool;
+    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool {
+        /* If move is physically possible by that piece */
+        if self.get_moves_local().contains(&move_) {
+            if let Some(piece) = board.get(move_.0, move_.1) {
+                let type_ = piece.piece_type();
+
+                // TODO: look out for if king is checked
+
+                if type_ != self.piece_type() {
+                    true
+                }else {
+                    false
+                }
+            }else {
+                false
+            }
+        }else {
+            false
+        }
+    }
 
     /// Get all possible moves on the board, relative to the piece
     fn get_moves_local(&self) -> Vec<(i8, i8)>;
