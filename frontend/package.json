@@ -1,0 +1,26 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Chess frontend",
+  "main": "index.js",
+  "bin": {
+    "frontend": "htmx.min.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arturr-H/Chess.git"
+  },
+  "keywords": [
+    "Chess",
+    "game"
+  ],
+  "author": "Artur Hoffsümmer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arturr-H/Chess/issues"
+  },
+  "homepage": "https://github.com/Arturr-H/Chess#readme"
+}
