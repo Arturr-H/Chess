@@ -1,6 +1,25 @@
 /* Imports */
 use crate::board::Board;
 
+/// Piece type
+pub enum PieceType {
+    White,
+    Black,
+    Empty
+}
+
+/// Method impl
+impl PartialEq for PieceType {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (PieceType::White, PieceType::White) => true,
+            (PieceType::Black, PieceType::Black) => true,
+            (PieceType::Empty, PieceType::Empty) => true,
+            _ => false,
+        }
+    }
+}
+
 /// Pre-defined functions for all chess pieces
 pub trait ChessPiece {
     /// If a chess piece can move to tile, the `to`
@@ -14,5 +33,5 @@ pub trait ChessPiece {
     fn get_moves_local(&self) -> Vec<(i8, i8)>;
 
     /// Get color of piece
-    fn is_white(&self) -> bool;
+    fn piece_type(&self) -> &PieceType;
 }
