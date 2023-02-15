@@ -13,11 +13,11 @@ mod tests {
 
     #[test]
     fn white_moves() -> () {
-        let rook_w = Bishop { color: Color::White };
-        let rook_b = Bishop { color: Color::Black };
+        let bishop_w = Bishop { color: Color::White };
+        let bishop_b = Bishop { color: Color::Black };
 
-        assert_eq!(rook_w.get_moves_local().contains(&(1, 1)), true);
-        assert_eq!(rook_b.get_moves_local().contains(&(-1, 1)), true);
-        assert_eq!(rook_b.get_moves_local().contains(&(0, 1)), false);
+        assert_eq!(bishop_w.get_moves_local().contains(&(1, 1)), true);
+        assert_eq!(bishop_b.get_moves_local().contains(&(-1, 1)), true);
+        assert_eq!(bishop_b.get_moves_local().contains(&(0, 1)), false);
     }
 }
