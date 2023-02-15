@@ -1,16 +1,16 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
 
-/* Horse */
+/* Knight */
 #[derive(Clone, Copy, Debug)]
-pub struct Horse {
+pub struct Knight {
     pub color: Color
 }
 
 /* Method implementations */
-impl PieceMethods for Horse {
+impl PieceMethods for Knight {
 
-    /* All possible moves for horse */
+    /* All possible moves for knight */
     fn get_moves_local(&self) -> Vec<(i8, i8)> {
         vec![
             /* Top */
@@ -29,7 +29,7 @@ impl PieceMethods for Horse {
 
     /* Constructor */
     fn new<'a>(color: Color) -> Piece where Self: Sized {
-        Piece::Horse(Self { color })
+        Piece::Knight(Self { color })
     }
 
     /* Getters */
