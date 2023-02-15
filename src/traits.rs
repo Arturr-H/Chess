@@ -1,14 +1,7 @@
 /* Imports */
 use crate::{
-    bundle::{
-        rook::Rook,
-        knight::Horse,
-        king::King,
-        queen::Queen,
-        bishop::Bishop,
-        pawn::Pawn
-    },
-    board::Board, piece::{Color, Piece}
+    board::Board,
+    piece::{Color, Piece}
 };
 
 /// Pre-defined functions for all chess pieces
@@ -33,7 +26,7 @@ pub trait PieceMethods {
                     if piece.color() != self.color() {
                         return true
                     }else {
-                        return false
+                        continue;
                     }
                 }
                 
@@ -42,7 +35,7 @@ pub trait PieceMethods {
                     return true
                 }
             }else {
-                return false
+                continue;
             }
         }
 
