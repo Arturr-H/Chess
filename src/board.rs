@@ -1,34 +1,35 @@
 /* Imports */
-use crate::traits::ChessPiece;
+use std::fmt::Debug;
+use crate::{
+    traits::PieceMethods,
+    piece::{ Color, Piece },
+    bundle::{ rook::Rook, horse::Horse, bishop::Bishop, queen::Queen, king::King, pawn::Pawn }
+};
 
 /* Structs */
-pub struct Board<'a> {
+pub struct Board {
     /* All chess pieces on the board - white and black */
-    pieces: Vec<Vec<&'a dyn ChessPiece>>,
+    pieces: Vec<Vec<Option<Piece>>>,
 }
 
 /* Method implementations */
-impl<'a> Board<'a> {
+impl Board {
     /* Constructor */
     pub fn new() -> Self {
         Self::default()
     }
 
     /* Getters */
-    pub fn get(&self, x: i8, y: i8) -> Option<&'a dyn ChessPiece> {
+    pub fn get(&self, x: i8, y: i8) -> Option<Piece> {
         if x.is_positive() && y.is_positive() {
-            Some(
-                *self.pieces.get(y as usize)?.get(x as usize)?
-            )
+            *self.pieces.get(y as usize)?.get(x as usize)?
         }else {
             None
         }
     }
-    pub fn get_mut(&mut self, x: i8, y: i8) -> Option<&'a dyn ChessPiece> {
+    pub fn get_mut(&mut self, x: i8, y: i8) -> Option<Piece> {
         if x.is_positive() && y.is_positive() {
-            Some(
-                *self.pieces.get_mut(y as usize)?.get_mut(x as usize)?
-            )
+            *self.pieces.get_mut(y as usize)?.get_mut(x as usize)?
         }else {
             None
         }
@@ -36,10 +37,22 @@ impl<'a> Board<'a> {
 }
 
 #[allow(unreachable_code)]
-impl<'a> Default for Board<'a> {
+impl Default for Board {
     fn default() -> Self {
+        let w = Color::White;
+        let b = Color::Black;
+
         Self {
-            pieces: vec![vec![panic!(); 8]; 8]
+            pieces: vec![
+                vec![ Some(Rook::new(w)), Some(Horse::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Horse::new(w)), Some(Rook::new(w)) ],
+                vec![ Some(Pawn::new(w)); 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ Some(Pawn::new(b)); 8 ],
+                vec![ Some(Rook::new(b)), Some(Horse::new(b)), Some(Bishop::new(b)), Some(Queen::new(b)), Some(King::new(b)), Some(Bishop::new(b)), Some(Horse::new(b)), Some(Rook::new(b)) ],
+            ]
         }
     }
 }
