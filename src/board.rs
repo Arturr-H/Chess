@@ -10,6 +10,9 @@ use crate::{
 pub struct Board {
     /* All chess pieces on the board - white and black */
     pieces: Vec<Vec<Option<Piece>>>,
+
+    /* Which player's turn it is */
+    turn: Color
 }
 
 /* Method implementations */
@@ -37,11 +40,12 @@ impl Board {
 
     /// Move piece, return Err() if didn't succeed
     pub fn move_piece_to_coordinate(&mut self, piece: (i8, i8), to: (i8, i8)) -> Result<(), &str> {
+        /* Checks */
         if piece == to { return Err("Can't move to same place") };
-
+        
         let move_piece = self.get(piece.0, piece.1);
         if let Some(move_piece) = move_piece {
-
+            if move_piece.color() != self.turn { return Err("Not right players turn") };
             let from = (piece.0, piece.1);
 
             /* Check if can move to place */
@@ -72,7 +76,8 @@ impl Default for Board {
                 vec![ None; 8 ],
                 vec![ Some(Pawn::new(w)); 8 ],
                 vec![ Some(Rook::new(w)), Some(Knight::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Knight::new(w)), Some(Rook::new(w)) ],
-            ]
+            ],
+            turn: Color::White
         }
     }
 }
