@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use crate::{
     traits::PieceMethods,
     piece::{ Color, Piece },
-    bundle::{ rook::Rook, horse::Horse, bishop::Bishop, queen::Queen, king::King, pawn::Pawn }
+    bundle::{ rook::Rook, knight::Horse, bishop::Bishop, queen::Queen, king::King, pawn::Pawn }
 };
 
 /* Structs */
@@ -54,5 +54,32 @@ impl Default for Board {
                 vec![ Some(Rook::new(b)), Some(Horse::new(b)), Some(Bishop::new(b)), Some(Queen::new(b)), Some(King::new(b)), Some(Bishop::new(b)), Some(Horse::new(b)), Some(Rook::new(b)) ],
             ]
         }
+    }
+}
+
+/* Debug impl */
+impl Debug for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // R = Rook, H = Horse, B = Bishop, Q = Queen, K = King, P = Pawn, # = Empty
+        let mut board = String::new();
+
+        for row in self.pieces.iter() {
+            for piece in row.iter() {
+                board.push_str(match piece {
+                    Some(p) => match p {
+                        Piece::Rook(_) => "R",
+                        Piece::Horse(_) => "H",
+                        Piece::Bishop(_) => "B",
+                        Piece::Queen(_) => "Q",
+                        Piece::King(_) => "K",
+                        Piece::Pawn(_) => "P",
+                    },
+                    None => "#",
+                });
+            }
+            board.push_str("\n");
+        }
+
+        write!(f, "{}", board)
     }
 }
