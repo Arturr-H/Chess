@@ -5,7 +5,7 @@ mod tests {
     #[test]
     fn move_() -> () {
         let mut board = Board::new();
-        board.move_piece_to_coordinate((0, 1), (0, 2)).unwrap();
+        board.move_piece_to_coordinate((0, 6), (0, 5)).unwrap();
     }
 
     #[test]
