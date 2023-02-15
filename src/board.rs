@@ -21,15 +21,15 @@ impl Board {
 
     /* Getters */
     pub fn get(&self, x: i8, y: i8) -> Option<Piece> {
-        if x.is_positive() && y.is_positive() {
+        if x >= 0 && y >= 0 {
             *self.pieces.get(y as usize)?.get(x as usize)?
         }else {
             None
         }
     }
-    pub fn get_mut(&mut self, x: i8, y: i8) -> Option<Piece> {
+    pub fn get_mut(&mut self, x: i8, y: i8) -> Option<&mut Piece> {
         if x.is_positive() && y.is_positive() {
-            *self.pieces.get_mut(y as usize)?.get_mut(x as usize)?
+            self.pieces.get_mut(y as usize)?.get_mut(x as usize)?.as_mut()
         }else {
             None
         }
@@ -44,14 +44,14 @@ impl Default for Board {
 
         Self {
             pieces: vec![
-                vec![ Some(Rook::new(w)), Some(Horse::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Horse::new(w)), Some(Rook::new(w)) ],
-                vec![ Some(Pawn::new(w)); 8 ],
-                vec![ None; 8 ],
-                vec![ None; 8 ],
-                vec![ None; 8 ],
-                vec![ None; 8 ],
-                vec![ Some(Pawn::new(b)); 8 ],
                 vec![ Some(Rook::new(b)), Some(Horse::new(b)), Some(Bishop::new(b)), Some(Queen::new(b)), Some(King::new(b)), Some(Bishop::new(b)), Some(Horse::new(b)), Some(Rook::new(b)) ],
+                vec![ Some(Pawn::new(b)); 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ None; 8 ],
+                vec![ Some(Pawn::new(w)); 8 ],
+                vec![ Some(Rook::new(w)), Some(Horse::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Horse::new(w)), Some(Rook::new(w)) ],
             ]
         }
     }
@@ -67,14 +67,14 @@ impl Debug for Board {
             for piece in row.iter() {
                 board.push_str(match piece {
                     Some(p) => match p {
-                        Piece::Rook(_) => "R",
-                        Piece::Horse(_) => "H",
-                        Piece::Bishop(_) => "B",
-                        Piece::Queen(_) => "Q",
-                        Piece::King(_) => "K",
-                        Piece::Pawn(_) => "P",
+                        Piece::Rook(_) => "R ",
+                        Piece::Horse(_) => "H ",
+                        Piece::Bishop(_) => "B ",
+                        Piece::Queen(_) => "Q ",
+                        Piece::King(_) => "K ",
+                        Piece::Pawn(_) => "P ",
                     },
-                    None => "#",
+                    None => "# ",
                 });
             }
             board.push_str("\n");
