@@ -37,14 +37,27 @@ impl Piece {
     }
 
     /// Can move local to original piece position
-    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool {
-        self.methods().can_move_local(move_, board)
+    pub fn can_move_local(&self, from: (i8, i8), to: (i8, i8), board: &Board) -> bool {
+        self.methods().can_move_local(from, to, board)
     }
 
     /// Get color
     pub fn color(&self) -> Color {
         self.methods().color()
     }
+}
+
+/* Invert local moves for piece */
+pub fn invert_local_moves(moves: &[(i8, i8)]) -> Vec<(i8, i8)> {
+    let mut end: Vec<(i8, i8)> = Vec::with_capacity(moves.len());
+    for (x, y) in moves {
+        end.push((
+            x*(-1),
+            y*(-1)
+        ))
+    };
+
+    end
 }
 
 /// Piece color
