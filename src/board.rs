@@ -34,6 +34,26 @@ impl Board {
             None
         }
     }
+
+    /// Move piece, return Err() if didn't succeed
+    pub fn move_piece_to_coordinate(&mut self, piece: (i8, i8), to: (i8, i8)) -> Result<(), &str> {
+        // if piece == to { return Err("Can't move to same place") };
+
+        let move_piece = self.get(piece.0, piece.1);
+        if let Some(move_piece) = move_piece {
+
+            let from = (piece.0, piece.1);
+
+            /* Check if can move to place */
+            if move_piece.can_move_local(from, to, &self) {
+                Ok(())
+            }else {
+                Err("Can't move there!")
+            }
+        }else {
+            Err("No piece will move")
+        }
+    }
 }
 
 #[allow(unreachable_code)]
