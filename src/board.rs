@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use crate::{
     traits::PieceMethods,
     piece::{ Color, Piece },
-    bundle::{ rook::Rook, knight::Horse, bishop::Bishop, queen::Queen, king::King, pawn::Pawn }
+    bundle::{ rook::Rook, knight::Knight, bishop::Bishop, queen::Queen, king::King, pawn::Pawn }
 };
 
 /* Structs */
@@ -64,14 +64,14 @@ impl Default for Board {
 
         Self {
             pieces: vec![
-                vec![ Some(Rook::new(b)), Some(Horse::new(b)), Some(Bishop::new(b)), Some(Queen::new(b)), Some(King::new(b)), Some(Bishop::new(b)), Some(Horse::new(b)), Some(Rook::new(b)) ],
+                vec![ Some(Rook::new(b)), Some(Knight::new(b)), Some(Bishop::new(b)), Some(Queen::new(b)), Some(King::new(b)), Some(Bishop::new(b)), Some(Knight::new(b)), Some(Rook::new(b)) ],
                 vec![ Some(Pawn::new(b)); 8 ],
                 vec![ None; 8 ],
                 vec![ None; 8 ],
                 vec![ None; 8 ],
                 vec![ None; 8 ],
                 vec![ Some(Pawn::new(w)); 8 ],
-                vec![ Some(Rook::new(w)), Some(Horse::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Horse::new(w)), Some(Rook::new(w)) ],
+                vec![ Some(Rook::new(w)), Some(Knight::new(w)), Some(Bishop::new(w)), Some(Queen::new(w)), Some(King::new(w)), Some(Bishop::new(w)), Some(Knight::new(w)), Some(Rook::new(w)) ],
             ]
         }
     }
@@ -88,7 +88,7 @@ impl Debug for Board {
                 board.push_str(match piece {
                     Some(p) => match p {
                         Piece::Rook(_) => "R ",
-                        Piece::Horse(_) => "H ",
+                        Piece::Knight(_) => "H ",
                         Piece::Bishop(_) => "B ",
                         Piece::Queen(_) => "Q ",
                         Piece::King(_) => "K ",
