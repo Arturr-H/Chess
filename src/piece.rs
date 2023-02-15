@@ -2,7 +2,7 @@
 use crate::{
     bundle::{
         rook::Rook,
-        knight::Horse,
+        knight::Knight,
         king::King,
         queen::Queen,
         bishop::Bishop,
@@ -15,7 +15,7 @@ use crate::{
 #[derive(Clone, Copy, Debug)]
 pub enum Piece {
     Rook(Rook),
-    Horse(Horse),
+    Knight(Knight),
     King(King),
     Queen(Queen),
     Bishop(Bishop),
@@ -28,7 +28,7 @@ impl Piece {
     pub fn methods(&self) -> &dyn PieceMethods {
         match self {
             Self::Rook(e) => e,
-            Self::Horse(e) => e,
+            Self::Knight(e) => e,
             Self::King(e) => e,
             Self::Queen(e) => e,
             Self::Bishop(e) => e,
