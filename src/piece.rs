@@ -12,7 +12,7 @@ use crate::{
 };
 
 /// The pieces
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum Piece {
     Rook(Rook),
     Horse(Horse),
@@ -25,7 +25,7 @@ pub enum Piece {
 /* Method implementations */
 impl Piece {
     /// Get piece methods
-    pub fn get_generic_inner(&self) -> &dyn PieceMethods {
+    pub fn methods(&self) -> &dyn PieceMethods {
         match self {
             Self::Rook(e) => e,
             Self::Horse(e) => e,
@@ -36,12 +36,17 @@ impl Piece {
         }
     }
 
+    /// Can move local to original piece position
+    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool {
+        self.methods().can_move_local(move_, board)
+    }
+
     /// Get color
     pub fn color(&self) -> Color {
-        self.get_generic_inner().color()
+        self.methods().color()
     }
 }
 
 /// Piece color
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum Color { White, Black }
