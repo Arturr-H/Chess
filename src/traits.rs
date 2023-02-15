@@ -25,6 +25,7 @@ pub trait PieceMethods {
             /* If the move seems possible */
             if (from.0 + add_x, from.1 + add_y) == to {
 
+                /* Spot with a piece */
                 if let Some(piece) = board.get(to.0, to.1) {
                     // TODO: look out for if king is checked & if pieces are blocking
                     
@@ -34,8 +35,11 @@ pub trait PieceMethods {
                     }else {
                         return false
                     }
-                }else {
-                    return false
+                }
+                
+                /* Empty spot */
+                else {
+                    return true
                 }
             }else {
                 return false
