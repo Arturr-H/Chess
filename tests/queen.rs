@@ -18,6 +18,6 @@ mod tests {
 
         assert_eq!(queen_w.get_moves_local().contains(&(1, 1)), true);
         assert_eq!(queen_w.get_moves_local().contains(&(-1, 1)), true);
-        assert_eq!(queen_b.get_moves_local().contains(&(0, 1)), false);
+        assert_eq!(queen_b.get_moves_local().contains(&(2, 1)), false);
     }
 }
