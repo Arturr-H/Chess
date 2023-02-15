@@ -18,29 +18,35 @@ pub trait PieceMethods {
     /// which are the "move request". Will check if
     /// move will cause own color to get checked, if
     /// so, return false
-    fn can_move_local(&self, move_: (i8, i8), board: &Board) -> bool where Self: Sized {
-        /* If move is physically possible by that piece */
-        if Self::get_moves_local().contains(&move_) {
-            if let Some(piece) = board.get(move_.0, move_.1) {
-                let type_ = piece.color();
+    fn can_move_local(&self, from: (i8, i8), to: (i8, i8), board: &Board) -> bool {
+        /* Check if `to` is in local move array */
+        for (add_x, add_y) in self.get_moves_local() {
 
-                // TODO: look out for if king is checked
+            /* If the move seems possible */
+            if (from.0 + add_x, from.1 + add_y) == to {
 
-                if type_ != self.color() {
-                    true
+                if let Some(piece) = board.get(to.0, to.1) {
+                    // TODO: look out for if king is checked & if pieces are blocking
+                    
+                    /* We can't take our own pieces */
+                    if piece.color() != self.color() {
+                        return true
+                    }else {
+                        return false
+                    }
                 }else {
-                    false
+                    return false
                 }
             }else {
-                false
+                return false
             }
-        }else {
-            false
         }
+
+        false
     }
 
     /// Get all possible moves on the board, relative to the piece
-    fn get_moves_local() -> Vec<(i8, i8)> where Self: Sized;
+    fn get_moves_local(&self) -> Vec<(i8, i8)>;
 
     /// Get the color
     fn color(&self) -> Color;
