@@ -13,7 +13,7 @@ use crate::{
     straight lines
 */
 pub fn iterate_look_for_check(x: i8, y: i8, board: &Board, color_of_king: Color, directions: &[(i8, i8)]) -> bool {
-    for (add_x, add_y) in directions {
+    'outer: for (add_x, add_y) in directions {
         let mut position: (i8, i8) = (x, y);
 
         /* Increment position */
@@ -29,7 +29,7 @@ pub fn iterate_look_for_check(x: i8, y: i8, board: &Board, color_of_king: Color,
                                 return true
                             }
                         },
-                        _ => { break }
+                        _ => { continue 'outer }
                     }
                 },
                 None => ()
