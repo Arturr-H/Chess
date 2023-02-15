@@ -2,7 +2,7 @@
 use crate::{
     bundle::{
         rook::Rook,
-        horse::Horse,
+        knight::Horse,
         king::King,
         queen::Queen,
         bishop::Bishop,
