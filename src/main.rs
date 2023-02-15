@@ -1,16 +1,21 @@
 /* Global allowances */
 #![allow(
-    dead_code
+    dead_code,
+    unused_imports
 )]
-
-/* Imports */
-use actix_web::{ App, HttpServer };
-use actix_files;
 
 /* Modules */
 mod routes;
 mod board;
 mod traits;
+mod piece;
+
+#[path = "./chess-pieces/bundle.rs"]
+mod bundle;
+
+/* Imports */
+use actix_web::{ App, HttpServer };
+use actix_files;
 
 /* Main */
 #[actix_web::main]
@@ -22,7 +27,6 @@ async fn main() -> std::io::Result<()> {
             /* Set maximum payload size to 32MiB */
             // .app_data(web::PayloadConfig::new(1 << 25))
             // .app_data(Data::clone(&appdata))
-            
 
             /* Static files */
             .service(routes::index)
