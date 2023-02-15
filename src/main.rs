@@ -5,13 +5,13 @@
 )]
 
 /* Modules */
-mod routes;
-mod board;
-mod traits;
-mod piece;
+pub mod routes;
+pub mod board;
+pub mod traits;
+pub mod piece;
 
 #[path = "./chess-pieces/bundle.rs"]
-mod bundle;
+pub mod bundle;
 
 /* Imports */
 use actix_web::{ App, HttpServer };
