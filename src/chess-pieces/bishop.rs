@@ -1,6 +1,8 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
 
+use super::utils::iterate_look_for_check;
+
 /* Bishop */
 #[derive(Clone, Copy, Debug)]
 pub struct Bishop {
@@ -30,6 +32,20 @@ impl PieceMethods for Bishop {
     /* Constructor */
     fn new<'a>(color: Color) -> Piece where Self: Sized {
         Piece::Bishop(Self { color })
+    }
+
+    /* If is checking opposing king */
+    fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &crate::board::Board) -> bool {
+        let directions = &[
+            /* Diagonal */
+            (1, 1), (1, -1), (-1, 1), (-1, -1),
+        ];
+
+        if iterate_look_for_check(x, y, board, color_of_king, directions) {
+            true
+        }else {
+            false
+        }
     }
 
     /* Getters */
