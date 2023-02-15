@@ -1,6 +1,8 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
 
+use super::utils::iterate_look_for_check;
+
 /* Rook */
 #[derive(Clone, Copy, Debug)]
 pub struct Rook {
@@ -30,6 +32,17 @@ impl PieceMethods for Rook {
     /* Constructor */
     fn new<'a>(color: Color) -> Piece where Self: Sized {
         Piece::Rook(Self { color })
+    }
+
+    /* If is checking king */
+    fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &crate::board::Board) -> bool {
+        let directions = &[(1, 0), (-1, 0), (0, 1), (0, -1)];
+
+        if iterate_look_for_check(x, y, board, color_of_king, directions) {
+            true
+        }else {
+            false
+        }
     }
 
     /* Getters */
