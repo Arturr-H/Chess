@@ -8,7 +8,7 @@ mod tests {
         let mut board = Board::new();
 
         /* Rooks cant initially move, therefore this test should panic */
-        board.move_piece_to_coordinate((0, 0), (0, 2)).unwrap();
+        board.move_piece_to_coordinate((0, 0), (0, 1)).unwrap();
     }
 
     #[test]
