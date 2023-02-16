@@ -1,6 +1,6 @@
 /* Imports */
 use crate::{
-    board::Board,
+    board::{Board, Tile},
     piece::{Color, Piece}
 };
 
@@ -19,7 +19,7 @@ pub trait PieceMethods {
             if (from.0 + add_x, from.1 + add_y) == to {
 
                 /* Spot with a piece */
-                if let Some(piece) = board.get(to.0, to.1) {
+                if let Tile::Piece(piece) = board.get(to.0, to.1) {
                     // TODO: look out for if king is checked & if pieces are blocking
                     if board.is_in_check(Color::White) {
                         dbg!("yes");
