@@ -46,7 +46,18 @@ impl Board {
 
     /// Will replace the tile the piece moves 
     /// from and then performs the move if possible
-    pub fn move_tile(&mut self, original_x: i8, original_y: i8, x: i8, y: i8, tile: Tile) -> Result<(), ()> {
+    pub fn move_tile(&mut self, original_x: i8, original_y: i8, x: i8, y: i8, mut tile: Tile) -> Result<(), ()> {
+
+        /* If the piece is a pawn, set its status to `has_moved` */
+        if let Tile::Piece(Piece::Pawn(pawn)) = tile {
+            tile = Tile::Piece(
+                Piece::Pawn(
+                    Pawn { color: pawn.color(), has_moved: true }
+                )
+            )
+        }
+
+        /* Move and replace tile */
         if x >= 0 && y >= 0 {
             self.pieces[original_y as usize][original_x as usize] = Tile::Empty;
             self.pieces[y as usize][x as usize] = tile;
@@ -130,14 +141,15 @@ impl From<Vec<Vec<Tile>>> for Board {
     }
 }
 
-
 /* Debug impl */
 impl Debug for Board {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // R = Rook, H = Horse, B = Bishop, Q = Queen, K = King, P = Pawn, # = Empty
         let mut board = String::new();
 
-        for row in self.pieces.iter() {
+        for (index, row) in self.pieces.iter().enumerate() {
+            board.push_str(&index.to_string());
+            board.push_str(" │ ");
             for piece in row.iter() {
                 board.push_str(match piece {
                     Tile::Piece(p) => match p {
@@ -153,6 +165,9 @@ impl Debug for Board {
             }
             board.push_str("\n");
         }
+
+        board.push_str("  └────────────────\n");
+        board.push_str("    0 1 2 3 4 5 6 7\n");
 
         write!(f, "{}", board)
     }
