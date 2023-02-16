@@ -1,5 +1,5 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::Board };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::{Board, Tile} };
 
 /* Pawn */
 #[derive(Clone, Copy, Debug)]
@@ -54,7 +54,7 @@ impl PieceMethods for Pawn {
     }
 }
 fn is_checking_king(x: i8, y: i8, board: &Board, color_of_king: Color) -> bool {
-    if let Some(piece) = board.get(x, y) {
+    if let Tile::Piece(piece) = board.get(x, y) {
         match piece {
             Piece::King(e) => {
                 if e.color() == color_of_king {

@@ -1,5 +1,5 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::Tile };
 
 /* Knight */
 #[derive(Clone, Copy, Debug)]
@@ -55,7 +55,7 @@ impl PieceMethods for Knight {
             
             /* Check item */
             match board.get(*new_x, *new_y) {
-                Some(e) => {
+                Tile::Piece(e) => {
                     match e {
                         Piece::King(e) => {
                             if e.color() == color_of_king {
@@ -65,7 +65,7 @@ impl PieceMethods for Knight {
                         _ => { continue; }
                     }
                 },
-                None => ()
+                Tile::Empty => ()
             }
         }
 
