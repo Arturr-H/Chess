@@ -10,13 +10,13 @@ mod tests {
 
     #[test]
     fn white_moves() -> () {
-        let pawn = Pawn { color: Color::White };
+        let pawn = Pawn { color: Color::White, has_moved: true };
         assert_eq!(pawn.get_moves_local() == vec![(0, -1)], true);
     }
 
     #[test]
     fn black_moves() -> () {
-        let pawn = Pawn { color: Color::Black };
+        let pawn = Pawn { color: Color::Black, has_moved: true };
         assert_eq!(pawn.get_moves_local() == vec![(0, 1)], true);
     }
 }
