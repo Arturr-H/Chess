@@ -1,6 +1,7 @@
 
 /* HTML elements */
 const BOARD: HTMLElement | null = document.getElementById("board");
+const GHOST_PIECE: HTMLElement | null = document.getElementById("ghost-piece");
 
 /* Constants */
 const hello: String = "hi awd aaawdwadaw lOLl";
@@ -13,6 +14,9 @@ enum Color {
 }
 
 /* Mutable */
+let is_dragging: boolean = false;
+let dragging_piece: Piece | null = null;
+let dragging_start: [number, number] | null = null;
 let tiles: Array<HTMLElement> = [];
 let pieces: Array<Piece | null> = [
     /* Back */
@@ -76,6 +80,7 @@ const initialize_grid = () => {
         for (let x = 0; x < GRID_SIZE; x++) {
             let tile: HTMLElement = document.createElement("div");
             tile.classList.add("tile");
+            tile.id = `${x}-${y}`;
 
             let piece = get_piece(x, y);
             if (piece !== null) {
@@ -87,6 +92,16 @@ const initialize_grid = () => {
                 };
 
                 piece_el.classList.add("piece")
+                piece_el.draggable = true;
+                piece_el.ondragstart = (ev) => {
+                    ev.dataTransfer?.setData("text/plain", `${x},${y}`);
+
+                    /* Set image */
+                    let image = new Image();
+                    image.src = piece_el.src;
+                    ev.dataTransfer?.setDragImage(image, 0, 0);
+                };
+
                 tile.appendChild(piece_el);
             }
 
@@ -113,6 +128,34 @@ const get_image_src = (name: "rook" | "bishop" | "knight" | "queen" | "king" | "
             return chess_pieces_images.light[name];
     }
 }
+
+/* Event listeners */
+BOARD?.addEventListener("mousedown", (e) => {
+    let element = e.target as HTMLElement;
+
+    let [x, y] = element.id.split("-").map((e) => parseInt(e));
+    dragging_start = [x, y];
+    dragging_piece = get_piece(x, y);
+    is_dragging = true;
+    GHOST_PIECE!.style.display = "block";
+})
+BOARD?.addEventListener("mouseup", (e) => {
+    if (is_dragging) {
+        GHOST_PIECE!.style.display = "none";
+        dragging_piece = null;
+        is_dragging = false;
+
+        let element = e.target as HTMLElement;
+        console.log("from", dragging_start, "to", element.id.split("-").map((e) => parseInt(e)));
+    }
+})
+BOARD?.addEventListener("mousemove", (e) => {
+    GHOST_PIECE!.style.display = "block";
+    GHOST_PIECE!.style.left = `${e.x}px`;
+    GHOST_PIECE!.style.top = `${e.y}px`;
+    GHOST_PIECE!.style.background = "url(" + get_image_src(dragging_piece?.name!, dragging_piece?.color!)! + ")";
+    GHOST_PIECE!.style.backgroundSize = "contain";
+})
 
 /* Main */
 initialize_grid();
