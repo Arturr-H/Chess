@@ -112,6 +112,19 @@ impl Board {
             Err("No piece will move")
         }
     }
+
+    /// Get whose turn it is
+    pub fn turn(&self) -> Color {
+        self.turn
+    }
+
+    /// Toggle turn
+    pub fn toggle_turn(&mut self) -> () {
+        match self.turn {
+            Color::Black => self.turn = Color::White,
+            Color::White => self.turn = Color::Black,
+        }
+    }
 }
 
 #[allow(unreachable_code)]
