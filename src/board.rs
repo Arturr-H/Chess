@@ -7,6 +7,7 @@ use crate::{
 };
 
 /* Structs */
+#[derive(Clone)]
 pub struct Board {
     /* All chess pieces on the board - white and black */
     pieces: Vec<Vec<Tile>>,
@@ -103,7 +104,29 @@ impl Board {
 
             /* Check if can move to place */
             if move_piece.can_move_local(from, to, &self) {
-                self.move_tile(piece.0, piece.1, to.0, to.1, Tile::Piece(move_piece)).unwrap();
+
+                /*
+                    Copy self (the board) and make the requested move
+                    If the move results in check for the mover, then
+                    return err that move is illegal
+                */
+                let mut board_copy = self.clone();
+                match board_copy.move_tile(piece.0, piece.1, to.0, to.1, Tile::Piece(move_piece)) {
+                    Ok(_) => {
+                        if board_copy.is_in_check(board_copy.turn()) {
+                            return Err("Illegal move; you are in check")
+                        }else {
+
+                            /* Move the actual piece on the actual board */
+                            match self.move_tile(piece.0, piece.1, to.0, to.1, Tile::Piece(move_piece)) {
+                                Ok(_) => (),
+                                Err(_) => return Err("Location out of bounds")
+                            };
+                        }
+                    },
+                    Err(_) => return Err("Location out of bounds")
+                };
+
                 Ok(())
             }else {
                 Err("Can't move there!")
