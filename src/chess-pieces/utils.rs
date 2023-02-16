@@ -1,7 +1,7 @@
 /* Imports */
 use crate::{
     piece::{ Piece, Color },
-    board::Board,
+    board::{Board, Tile},
     traits::PieceMethods
 };
 
@@ -22,7 +22,7 @@ pub fn iterate_look_for_check(x: i8, y: i8, board: &Board, color_of_king: Color,
 
             /* Check item */
             match board.get(position.0, position.1) {
-                Some(e) => {
+                Tile::Piece(e) => {
                     match e {
                         Piece::King(e) => {
                             if e.color() == color_of_king {
@@ -32,7 +32,7 @@ pub fn iterate_look_for_check(x: i8, y: i8, board: &Board, color_of_king: Color,
                         _ => { continue 'outer }
                     }
                 },
-                None => ()
+                Tile::Empty => ()
             }
         }
     }
