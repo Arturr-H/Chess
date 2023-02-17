@@ -349,14 +349,10 @@ version = "0.1.0"
 dependencies = [
  "actix-files",
  "actix-web",
- "futures-channel",
- "futures-util",
  "rand",
  "serde",
  "serde_derive",
  "serde_json",
- "tokio",
- "tokio-tungstenite",
  "uuid",
 ]
 
@@ -639,6 +635,12 @@ name = "language-tags"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
+
+[[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
@@ -1243,6 +1245,21 @@ name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
+
+[[package]]
+name = "websockets"
+version = "0.1.0"
+dependencies = [
+ "chess",
+ "futures-channel",
+ "futures-util",
+ "lazy_static",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "tokio",
+ "tokio-tungstenite",
+]
 
 [[package]]
 name = "winapi"
