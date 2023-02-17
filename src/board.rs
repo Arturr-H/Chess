@@ -1,5 +1,6 @@
 /* Imports */
 use std::fmt::Debug;
+use serde_derive::{ Serialize };
 use crate::{
     traits::PieceMethods,
     piece::{ Color, Piece },
@@ -7,7 +8,7 @@ use crate::{
 };
 
 /* Structs */
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub struct Board {
     /* All chess pieces on the board - white and black */
     pieces: Vec<Vec<Tile>>,
@@ -17,7 +18,7 @@ pub struct Board {
 }
 
 /* Board tile */
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize)]
 pub enum Tile {
     Empty,
     Piece(Piece)
@@ -98,6 +99,7 @@ impl Board {
         /* Checks */
         if piece == to { return Err("Can't move to same place") };
         let move_piece = self.get(piece.0, piece.1);
+
         if let Tile::Piece(move_piece) = move_piece {
             if move_piece.color() != self.turn { return Err("Not right players turn") };
             let from = (piece.0, piece.1);
@@ -132,7 +134,7 @@ impl Board {
                 Err("Can't move there!")
             }
         }else {
-            Err("No piece will move")
+            Err("Can't move an empty piece")
         }
     }
 
