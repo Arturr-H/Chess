@@ -10,9 +10,10 @@ use crate::{
     },
     board::Board, traits::PieceMethods
 };
+use serde_derive::Serialize;
 
 /// The pieces
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub enum Piece {
     Rook(Rook),
     Knight(Knight),
@@ -61,5 +62,5 @@ pub fn invert_local_moves(moves: &[(i8, i8)]) -> Vec<(i8, i8)> {
 }
 
 /// Piece color
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize)]
 pub enum Color { White, Black }
