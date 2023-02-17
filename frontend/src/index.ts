@@ -13,6 +13,9 @@ enum Color {
     White
 }
 
+/* Types */
+type PieceName = "rook" | "bishop" | "knight" | "queen" | "king" | "pawn";
+
 /* Mutable */
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
@@ -66,12 +69,15 @@ let chess_pieces_images = {
 
 /* Interfaces */
 interface Piece {
-    name: "rook" | "bishop" | "knight" | "queen" | "king" | "pawn",
+    name: PieceName,
     color: Color
 }
 
 /* Functions */
-const initialize_grid = () => {
+const draw_grid = () => {
+    tiles = [];
+    BOARD!.innerHTML = "";
+
     for (let y = 0; y < GRID_SIZE; y++) {
         const ROW: HTMLElement = document.createElement("div");
         ROW.classList.add("row");
@@ -120,7 +126,7 @@ const get_piece = (x: number, y: number): Piece | null => {
 }
 
 /* Get image from piece name */
-const get_image_src = (name: "rook" | "bishop" | "knight" | "queen" | "king" | "pawn", color: Color): string | null => {
+const get_image_src = (name: PieceName, color: Color): string | null => {
     switch (color) {
         case Color.Black:
             return chess_pieces_images.dark[name];
@@ -146,7 +152,7 @@ BOARD?.addEventListener("mouseup", (e) => {
         is_dragging = false;
 
         let element = e.target as HTMLElement;
-        console.log("from", dragging_start, "to", element.id.split("-").map((e) => parseInt(e)));
+        move_piece(dragging_start!, [parseInt(element.id.split("-")[0]), parseInt(element.id.split("-")[1])]);
     }
 })
 BOARD?.addEventListener("mousemove", (e) => {
@@ -157,5 +163,36 @@ BOARD?.addEventListener("mousemove", (e) => {
     GHOST_PIECE!.style.backgroundSize = "contain";
 })
 
+/* Move piece */
+const move_piece = (from: [number, number], to: [number, number]) => {
+    fetch("/move", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "from0": from[0].toString(),
+            "from1": from[1].toString(),
+            "to0": to[0].toString(),
+            "to1": to[1].toString(),
+        },
+    }).then(async e => await e.json()).then(e => {
+        if (e.status === 200) {
+            pieces = [].concat.apply([], e.board.pieces).map((e): Piece | null => {
+                if (typeof e === "string") {
+                    return null;
+                }else {
+                    let name = Object.keys(e["Piece"])[0];
+                    let color = e["Piece"][name]["color"] === "Black" ? Color.Black : Color.White;
+                    
+                    return { name: name.toLocaleLowerCase() as PieceName, color: color }
+                };
+            });
+        }else {
+            alert(e.message)
+        }
+
+        draw_grid();
+    });
+}
+
 /* Main */
-initialize_grid();
+draw_grid();
