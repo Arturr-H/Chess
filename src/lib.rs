@@ -5,4 +5,5 @@ pub mod routes;
 pub mod board;
 pub mod traits;
 pub mod piece;
+pub mod game;
 

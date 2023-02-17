@@ -9,6 +9,7 @@ pub mod routes;
 pub mod board;
 pub mod traits;
 pub mod piece;
+pub mod game;
 
 #[path = "./chess-pieces/bundle.rs"]
 pub mod bundle;
