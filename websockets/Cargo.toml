@@ -14,3 +14,6 @@ tokio-tungstenite = "0.18.0"
 tokio = { version = "1.24.1", features = ["macros", "rt-multi-thread"] }
 futures-util = { version = "0.3.25", features = ["sink", "std"] }
 futures-channel = "0.3.25"
+
+## For storing games
+lazy_static = "1.4.0"
