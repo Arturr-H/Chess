@@ -1,9 +1,10 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
 use super::{ bishop::Bishop, rook::Rook, utils::iterate_look_for_check };
+use serde_derive::Serialize;
 
 /* Queen */
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct Queen {
     pub color: Color
 }

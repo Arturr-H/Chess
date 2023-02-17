@@ -1,8 +1,9 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::Tile };
+use serde_derive::Serialize;
 
 /* King */
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct King {
     pub color: Color
 }

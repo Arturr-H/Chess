@@ -1,8 +1,9 @@
 /* Imports */
 use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::{Board, Tile} };
+use serde_derive::Serialize;
 
 /* Pawn */
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct Pawn {
     pub color: Color,
 
