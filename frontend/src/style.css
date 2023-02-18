@@ -27,8 +27,8 @@ html, body {
     aspect-ratio: 1;
     border-radius: 1vmax;
 
-    display: grid;
-    grid-template-rows: repeat(8, 1fr);
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 
     border: 0.2vmax black solid;
