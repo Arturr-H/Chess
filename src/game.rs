@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 /* Imports */
 use super::board::Board;
 use uuid;
@@ -10,8 +12,8 @@ pub struct Game {
     /* Player uids, they are options because
         player 2 might not be connected - player
         1 creates game and waits for player 2 */
-    white: Option<String>,
-    black: Option<String>,
+    white: Option<SocketAddr>,
+    black: Option<SocketAddr>,
 
     /* Game-ID */
     id: String
@@ -22,7 +24,7 @@ impl Game {
     /// Create a new `Game` struct. The `player`
     /// parameter is the uuid of the player who
     /// created the game.
-    pub fn new(player: String) -> Self {
+    pub fn new(player: SocketAddr) -> Self {
         let player_1_white = rand::thread_rng().gen_bool(0.5f64);
 
         /* If player 1 should be white */
@@ -45,7 +47,7 @@ impl Game {
 
     /// Append player to empty color, if 
     /// spot is taken, return Err(_)
-    pub fn insert_player(&mut self, player: String) -> Result<(), ()> {
+    pub fn insert_player(&mut self, player: SocketAddr) -> Result<(), ()> {
         match self.black() {
             Some(_) => {
                 match self.white() {
@@ -72,8 +74,8 @@ impl Game {
     }
 
     /* Getters */
-    pub fn white(&self) -> Option<&String> { self.white.as_ref() }
-    pub fn black(&self) -> Option<&String> { self.black.as_ref() }
+    pub fn white(&self) -> Option<&SocketAddr> { self.white.as_ref() }
+    pub fn black(&self) -> Option<&SocketAddr> { self.black.as_ref() }
     pub fn id(&self) -> &String { &self.id }
     pub fn board(&self) -> &Board { &self.board }
     pub fn board_mut(&mut self) -> &mut Board { &mut self.board }
