@@ -1,7 +1,14 @@
+#![allow(
+    unused_imports,
+    dead_code
+)]
+
 /* Modules */
 mod request;
+mod methods;
 
 /* Imports */
+use chess::game::Game;
 use serde_derive::Deserialize;
 use serde_json::json;
 use std::{
@@ -23,6 +30,7 @@ const PORT: u16 = 8081;
 /* Types */
 type Tx = UnboundedSender<Message>;
 type PeerMap = Arc<Mutex<HashMap<SocketAddr, Tx>>>;
+type ChessGames = Arc<Mutex<Vec<Game>>>;
 
 #[tokio::main]
 async fn main() {
@@ -31,16 +39,17 @@ async fn main() {
     let server = TcpListener::bind(&addr).await.unwrap();
     println!("{addr}");
 
-    /* Create peer map */
+    /* Create peer map and games */
     let peers:PeerMap = Arc::new(Mutex::new(HashMap::new()));
+    let games:ChessGames = Arc::new(Mutex::new(Vec::new()));
 
     /* Incoming requests */
     while let Ok((stream, addr)) = server.accept().await {
-        tokio::spawn(handle_connection(peers.clone(), stream, addr));
+        tokio::spawn(handle_connection(peers.clone(), games.clone(), stream, addr));
     }
 }
 
-async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: SocketAddr) {
+async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: TcpStream, addr: SocketAddr) {
     let ws_stream = match tokio_tungstenite::accept_async(raw_stream).await {
         Ok(e) => e,
         Err(_) => return
@@ -60,7 +69,7 @@ async fn handle_connection(peer_map: PeerMap, raw_stream: TcpStream, addr: Socke
 
         match &data {
             Message::Text(text) => {
-                return request::handle_request(text, &data, peers)
+                return request::handle_request(text, peers, games.clone(), addr)
             },
             _ => return future::ok(())
         };
