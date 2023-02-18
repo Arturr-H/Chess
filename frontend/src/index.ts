@@ -6,6 +6,7 @@ const GHOST_PIECE: HTMLElement | null = document.getElementById("ghost-piece");
 /* Constants */
 const hello: String = "hi awd aaawdwadaw lOLl";
 const GRID_SIZE: number = 8;
+const ws = new WebSocket("ws://localhost:8081/");
 
 /* Enums */
 enum Color {
@@ -17,6 +18,8 @@ enum Color {
 type PieceName = "rook" | "bishop" | "knight" | "queen" | "king" | "pawn";
 
 /* Mutable */
+let is_white: boolean = false;
+let game_id: string | null = null;
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
 let dragging_start: [number, number] | null = null;
@@ -74,9 +77,12 @@ interface Piece {
 }
 
 /* Functions */
-const draw_grid = () => {
+const draw_grid = (pcs: any) => {
     tiles = [];
     BOARD!.innerHTML = "";
+    (!is_white)
+        ? BOARD!.style.flexDirection = "column-reverse"
+        : BOARD!.style.flexDirection = "column"
 
     for (let y = 0; y < GRID_SIZE; y++) {
         const ROW: HTMLElement = document.createElement("div");
@@ -88,7 +94,7 @@ const draw_grid = () => {
             tile.classList.add("tile");
             tile.id = `${x}-${y}`;
 
-            let piece = get_piece(x, y);
+            let piece = get_piece(pcs, x, y);
             if (piece !== null) {
                 let piece_el = document.createElement("img");
 
@@ -98,16 +104,6 @@ const draw_grid = () => {
                 };
 
                 piece_el.classList.add("piece")
-                piece_el.draggable = true;
-                piece_el.ondragstart = (ev) => {
-                    ev.dataTransfer?.setData("text/plain", `${x},${y}`);
-
-                    /* Set image */
-                    let image = new Image();
-                    image.src = piece_el.src;
-                    ev.dataTransfer?.setDragImage(image, 0, 0);
-                };
-
                 tile.appendChild(piece_el);
             }
 
@@ -121,8 +117,8 @@ const draw_grid = () => {
 };
 
 /* Get element from `pieces` array */
-const get_piece = (x: number, y: number): Piece | null => {
-    return pieces[8*y + x];
+const get_piece = (pcs: any, x: number, y: number): Piece | null => {
+    return pcs[8*y + x];
 }
 
 /* Get image from piece name */
@@ -141,7 +137,7 @@ BOARD?.addEventListener("mousedown", (e) => {
 
     let [x, y] = element.id.split("-").map((e) => parseInt(e));
     dragging_start = [x, y];
-    dragging_piece = get_piece(x, y);
+    dragging_piece = get_piece(pieces, x, y);
     is_dragging = true;
     GHOST_PIECE!.style.display = "block";
 })
@@ -152,7 +148,7 @@ BOARD?.addEventListener("mouseup", (e) => {
         is_dragging = false;
 
         let element = e.target as HTMLElement;
-        move_piece(dragging_start!, [parseInt(element.id.split("-")[0]), parseInt(element.id.split("-")[1])]);
+        send_move_piece(dragging_start!, [parseInt(element.id.split("-")[0]), parseInt(element.id.split("-")[1])]);
     }
 })
 BOARD?.addEventListener("mousemove", (e) => {
@@ -164,35 +160,70 @@ BOARD?.addEventListener("mousemove", (e) => {
 })
 
 /* Move piece */
-const move_piece = (from: [number, number], to: [number, number]) => {
-    fetch("/move", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "from0": from[0].toString(),
-            "from1": from[1].toString(),
-            "to0": to[0].toString(),
-            "to1": to[1].toString(),
-        },
-    }).then(async e => await e.json()).then(e => {
-        if (e.status === 200) {
-            pieces = [].concat.apply([], e.board.pieces).map((e): Piece | null => {
-                if (typeof e === "string") {
-                    return null;
-                }else {
-                    let name = Object.keys(e["Piece"])[0];
-                    let color = e["Piece"][name]["color"] === "Black" ? Color.Black : Color.White;
-                    
-                    return { name: name.toLocaleLowerCase() as PieceName, color: color }
-                };
-            });
+const send_move_piece = (from: [number, number], to: [number, number]) => {
+    ws.send(JSON.stringify({
+        "request_type": "move",
+        "game_id": game_id,
+        "from0": from[0].toString(),
+        "from1": from[1].toString(),
+        "to0": to[0].toString(),
+        "to1": to[1].toString(),
+    }));
+}
+const move_piece = (pieces: any) => {
+    pieces = [].concat.apply([], pieces).map((e): Piece | null => {
+        if (typeof e === "string") {
+            return null;
         }else {
-            alert(e.message)
-        }
-
-        draw_grid();
+            let name = Object.keys(e["Piece"])[0];
+            let color = e["Piece"][name]["color"] === "Black" ? Color.Black : Color.White;
+            
+            return { name: name.toLocaleLowerCase() as PieceName, color: color }
+        };
     });
+    draw_grid(pieces);
+}
+
+/* Websockets */
+ws.onmessage = (e) => {
+    let data = JSON.parse(e.data);
+    console.log(data);
+
+    /* If no game was found - create game */
+    if (data.status !== 200) {
+        if (data.status === 404 && data.type === "game_not_found") {
+            ws.send(JSON.stringify({
+                "request_type": "create",
+            }));
+        };
+    }else {
+        switch (data.type) {
+            case "move":
+                move_piece(data.board.pieces);
+                break;
+            case "join":
+                alert("Joined game!");
+                break;
+            case "create":
+                alert("Created game!");
+                break;
+            case "start":
+                alert("Started game!");
+                game_id = data.game_id;
+                break;
+            default:
+                break;
+        }
+    }
+}
+ws.onclose = (e) => {
+    alert("Connection closed!");
+}
+ws.onopen = (e) => {
+    ws.send(JSON.stringify({
+        "request_type": "join",
+    }));
 }
 
 /* Main */
-draw_grid();
+draw_grid(pieces);
