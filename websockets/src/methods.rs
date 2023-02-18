@@ -33,7 +33,7 @@ pub fn create(
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.push(
-        Game::new(addr.to_string())
+        Game::new(addr)
     );
 
     /* Write the request origin */
@@ -46,6 +46,7 @@ pub fn create(
             Message::Text(
                 json!({
                     "status": 200,
+                    "message": "Game has been created"
                 }).to_string()
             )
         ).ok();
@@ -70,55 +71,42 @@ pub fn join(
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
 
     /* Find game */
-    let mut game_found: bool = false;
     for game in match games.lock() {
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.iter_mut() {
         if !game.occupied() {
-            match game.insert_player(addr.to_string()) {
+            match game.insert_player(addr) {
                 Ok(_) => (),
                 Err(_) => continue
             };
 
-            game_found = true;
-            break;
+            /* Send to all players in game */
+            let msg = Message::Text(
+                json!({
+                    "status": 200,
+                    "message": "Game started!",
+                    "game_id": game.id()
+                }).to_string()
+            );
+            
+            /* Write the request origin */
+            return write_origin(&peers, &[
+                *game.black().unwrap(),
+                *game.white().unwrap()
+            ], &msg)
         }
     };
 
     /* Game not found */
-    if !game_found {
-        for recp in peers
-        .iter()
-        .filter(|(peer_addr, _)| peer_addr == &&addr)
-            .map(|(_, ws_sink)| ws_sink) {
-
-            recp.unbounded_send(
-                Message::Text(
-                    json!({
-                        "status": 404,
-                    }).to_string()
-                )
-            ).ok();
-        }
-    };
-
-    /* Write the request origin */
-    for recp in peers
-        .iter()
-        .filter(|(peer_addr, _)| peer_addr == &&addr)
-        .map(|(_, ws_sink)| ws_sink) {
-
-        recp.unbounded_send(
-            Message::Text(
-                json!({
-                    "status": 200,
-                }).to_string()
-            )
-        ).ok();
-    };
-
-    return future::ok(())
+    return write_origin(&peers, &[addr], 
+        &Message::Text(
+            json!({
+                "status": 404,
+                "message": "Game not found!"
+            }).to_string()
+        )
+    )
 }
 
 /* Make move */
@@ -160,7 +148,7 @@ pub fn move_(
         (Ok(from0), Ok(from1), Ok(to0), Ok(to1)) => {
             (from0, from1, to0, to1)
         },
-        _ => return write_origin(peers, addr, parse_error)
+        _ => return write_origin(&peers, &[addr], &parse_error)
     };
 
     /* Find game and move */
@@ -172,7 +160,7 @@ pub fn move_(
             match game.board_mut().move_piece_to_coordinate((from0, from1), (to0, to1)) {
                 /* Move possible */
                 Ok(_) => {
-                    return write_origin(peers, addr, Message::Text(
+                    return write_origin(&peers, &[addr], &Message::Text(
                         json!({
                             "status": 200,
                             "message": "Move successful"
@@ -182,7 +170,7 @@ pub fn move_(
 
                 /* Move not possible */
                 Err(e) => {
-                    return write_origin(peers, addr, Message::Text(
+                    return write_origin(&peers, &[addr], &Message::Text(
                         json!({
                             "status": 404,
                             "message": e
@@ -197,7 +185,8 @@ pub fn move_(
 }
 
 /* Write to origin */
-fn write_origin(peers:MutexGuard<
+fn write_origin(
+    peers:&MutexGuard<
         HashMap<
             SocketAddr,
             UnboundedSender<
@@ -205,12 +194,12 @@ fn write_origin(peers:MutexGuard<
             >
         >
     >,
-    addr: SocketAddr,
-    message: Message
+    addrs: &[SocketAddr],
+    message: &Message
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
     for recp in peers
         .iter()
-        .filter(|(peer_addr, _)| peer_addr == &&addr)
+        .filter(|(peer_addr, _)| addrs.contains(&peer_addr))
         .map(|(_, ws_sink)| ws_sink) {
 
         recp.unbounded_send(
