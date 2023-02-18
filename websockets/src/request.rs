@@ -1,4 +1,5 @@
 /* Imports */
+use chess::game::Game;
 use serde_derive::Deserialize;
 use serde_json::json;
 use std::{
@@ -10,11 +11,11 @@ use std::{
 use tokio_tungstenite::tungstenite::protocol::Message;
 use futures_channel::mpsc::UnboundedSender;
 use futures_util::future;
+use crate::{ChessGames, methods::{create, join, move_}};
 
 /* Main */
 pub fn handle_request(
     text: &str,
-    data: &Message,
     peers:MutexGuard<
         HashMap<
             SocketAddr,
@@ -22,20 +23,28 @@ pub fn handle_request(
                 Message
             >
         >
-    >
+    >,
+    games: ChessGames,
+    addr: SocketAddr
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
 
     /* Request data struct */
     #[derive(Deserialize)]
-    struct Request {
-        board_id: String,
-        player_id: String,
+    struct RequestType {
+        request_type: String, // "create" | "move" | "join" 
+    }
 
-        /* Moves */
-        from0: String,
-        from1: String,
-        to0: String,
-        to1: String,
+    /* Parse request */
+    match serde_json::from_str::<RequestType>(text) {
+        Ok(e) => {
+            match e.request_type.as_str() {
+                "create" => return create(text, peers, games, addr),
+                "join" => return join(text, peers, games, addr),
+                "move" => return move_(text, peers, games, addr),
+                _ => panic!()
+            }
+        },
+        Err(_) => {}
     }
 
     /* Write to all clients including ourselves */
