@@ -15,7 +15,6 @@ use crate::ChessGames;
 
 /* Create game */
 pub fn create(
-    text: &str,
     peers:MutexGuard<
         HashMap<
             SocketAddr,
@@ -46,7 +45,8 @@ pub fn create(
             Message::Text(
                 json!({
                     "status": 200,
-                    "message": "Game has been created"
+                    "message": "Game has been created",
+                    "type": "create"
                 }).to_string()
             )
         ).ok();
@@ -57,7 +57,6 @@ pub fn create(
 
 /* Join game */
 pub fn join(
-    text: &str,
     peers:MutexGuard<
         HashMap<
             SocketAddr,
@@ -86,7 +85,8 @@ pub fn join(
                 json!({
                     "status": 200,
                     "message": "Game started!",
-                    "game_id": game.id()
+                    "game_id": game.id(),
+                    "type": "start"
                 }).to_string()
             );
             
@@ -103,7 +103,8 @@ pub fn join(
         &Message::Text(
             json!({
                 "status": 404,
-                "message": "Game not found!"
+                "message": "Game not found!",
+                "type": "game_not_found"
             }).to_string()
         )
     )
@@ -127,7 +128,7 @@ pub fn move_(
     /* Request data struct */
     #[derive(Deserialize)]
     struct Request {
-        board_id: String,
+        game_id: String,
 
         /* Moves */
         from0: String,
@@ -139,11 +140,11 @@ pub fn move_(
     /* Parse request */
     let req = match serde_json::from_str::<Request>(text) {
         Ok(e) => e,
-        Err(_) => return future::ok(())
+        Err(_) => return write_origin(&peers, &[addr], &Message::Text(json!({ "status": 403, "message": "Couldn't parse request" }).to_string()))
     };
 
     /* Get moves */
-    let parse_error = Message::Text(json!({ "status": 403 }).to_string());
+    let parse_error = Message::Text(json!({ "status": 403, "message": "Parsing error" }).to_string());
     let (from0, from1, to0, to1) = match ( req.from0.parse::<i8>(), req.from1.parse::<i8>(), req.to0.parse::<i8>(), req.to1.parse::<i8>() ) {
         (Ok(from0), Ok(from1), Ok(to0), Ok(to1)) => {
             (from0, from1, to0, to1)
@@ -156,20 +157,28 @@ pub fn move_(
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.iter_mut() {
-        if game.id() == &req.board_id {
+        if game.id() == &req.game_id {
             match game.board_mut().move_piece_to_coordinate((from0, from1), (to0, to1)) {
                 /* Move possible */
                 Ok(_) => {
-                    return write_origin(&peers, &[addr], &Message::Text(
+                    /* Switch player */
+                    game.board_mut().toggle_turn();
+
+                    return write_origin(&peers, &[*game.black().unwrap(), *game.white().unwrap()], &Message::Text(
                         json!({
                             "status": 200,
-                            "message": "Move successful"
+                            "message": "Move successful",
+                            "board": game.board(),
+                            "type": "move"
                         }).to_string()
                     ));
                 },
 
                 /* Move not possible */
                 Err(e) => {
+                    /* Only write to self origin because other
+                        player won't need to hear about the current
+                        players moves being rejected */
                     return write_origin(&peers, &[addr], &Message::Text(
                         json!({
                             "status": 404,
