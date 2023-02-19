@@ -1,5 +1,5 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::Tile };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::{Tile, Board} };
 use serde_derive::Serialize;
 
 /* Knight */
@@ -12,7 +12,7 @@ pub struct Knight {
 impl PieceMethods for Knight {
 
     /* All possible moves for knight */
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
+    fn get_moves_local(&self, _: (i8, i8), _: &Board) -> Vec<(i8, i8)> {
         vec![
             /* Top */
             (-1, -2), (1, -2),
