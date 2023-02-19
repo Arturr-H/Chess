@@ -66,6 +66,8 @@ html, body {
 
     user-select: none;
     pointer-events: none;
+}.board > .row > .tile.highlight {
+    background: #b2df6c;
 }.ghost-piece {
     position: absolute;
     width: 5rem;
