@@ -58,6 +58,8 @@ pub fn get_possible_moves_in_direction(board: &Board, from: (i8, i8), direction:
             direction.1*i + from.1
         );
 
+        if position.0 > 7 || position.1 > 7 { break; };
+
         /* Check item */
         match board.get(position.0, position.1) {
             Tile::Piece(e) => {
