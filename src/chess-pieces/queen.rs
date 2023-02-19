@@ -1,5 +1,5 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::Board };
 use super::{ bishop::Bishop, rook::Rook, utils::iterate_look_for_check };
 use serde_derive::Serialize;
 
@@ -13,11 +13,11 @@ pub struct Queen {
 impl PieceMethods for Queen {
 
     /* All possible moves for queen (DOES NOT NEED TO BE INVERTED) */
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
+    fn get_moves_local(&self, position: (i8, i8), board: &Board) -> Vec<(i8, i8)> {
         /* Combine rook and bishop moves (super smart) */
         vec![
-            Bishop::get_moves_local(&Bishop { color: Color::White }),
-            Rook::get_moves_local(&Rook { color: Color::White })
+            Bishop::get_moves_local(&Bishop { color: Color::White }, position, board),
+            Rook::get_moves_local(&Rook { color: Color::White }, position, board)
         ].concat()
     }
 
