@@ -17,7 +17,7 @@ const LOCAL_MOVES_WITH_LEAP:&[(i8, i8)] = &[(0, 1), (0, 2)];
 
 /* Method implementations */
 impl PieceMethods for Pawn {
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
+    fn get_moves_local(&self, _: (i8, i8), _: &Board) -> Vec<(i8, i8)> {
         if self.has_moved {
             if self.color() == Color::White {
                 invert_local_moves(LOCAL_MOVES)
@@ -40,7 +40,7 @@ impl PieceMethods for Pawn {
     /// so, return false
     fn can_move_local(&self, from: (i8, i8), to: (i8, i8), board: &Board) -> bool {
         /* Check if `to` is in local move array */
-        for (add_x, add_y) in self.get_moves_local() {
+        for (add_x, add_y) in self.get_moves_local(from, board) {
 
             /* Firstly, if the pawn wants to do the "double leap", we
                 need to check if theres a pawn infront blocking the leap.
