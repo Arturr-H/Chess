@@ -32,6 +32,61 @@ impl PieceMethods for Pawn {
             }
         }
     }
+
+    /// If a chess piece can move to tile, the `to`
+    /// param is a tuple of two signed integers 
+    /// which are the "move request". Will check if
+    /// move will cause own color to get checked, if
+    /// so, return false
+    fn can_move_local(&self, from: (i8, i8), to: (i8, i8), board: &Board) -> bool {
+        /* Check if `to` is in local move array */
+        for (add_x, add_y) in self.get_moves_local() {
+
+            /* Firstly, if the pawn wants to do the "double leap", we
+                need to check if theres a pawn infront blocking the leap.
+                If there's a piece blocking, the move is incorrect */
+            if add_y == 2 || add_y == -2 {
+                if let Tile::Piece(_) = board.get(from.0, from.1 + add_y/2) {
+                    continue;
+                }
+            }
+
+            /* If the move seems possible */
+            if (from.0 + add_x, from.1 + add_y) == to {
+
+                /* Pawns can only move forward if there's an empty piece there */
+                if let Tile::Empty = board.get(to.0, to.1) {
+                    return true
+                }
+            }else {
+                continue;
+            }
+        }
+
+        /* Check if pawn can do their "side-step" */
+        let check = 
+            /* If the color is black, pieces move down */
+            if self.color().is_black()
+                { (from.0 + 1, from.1 + 1) == to || (from.0 - 1, from.1 + 1) == to }
+
+            /* Else pieces move up */
+            else 
+                { (from.0 + 1, from.1 - 1) == to || (from.0 - 1, from.1 - 1) == to };
+
+        if check {
+            /* Can only move if there is a piece there */
+            if let Tile::Piece(piece) = board.get(to.0, to.1) {
+    
+                /* We can't take our own pieces */
+                if piece.color() != self.color() {
+                    return true
+                }
+            }
+        }
+
+        false
+    }
+
     /* Constructor */
     fn new<'a>(color: Color) -> Piece where Self: Sized {
         Piece::Pawn(Self { color, has_moved: false })
