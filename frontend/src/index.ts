@@ -4,7 +4,6 @@ const BOARD: HTMLElement | null = document.getElementById("board");
 const GHOST_PIECE: HTMLElement | null = document.getElementById("ghost-piece");
 
 /* Constants */
-const hello: String = "hi awd aaawdwadaw lOLl";
 const GRID_SIZE: number = 8;
 const ws = new WebSocket("ws://localhost:8081/");
 
@@ -53,20 +52,20 @@ let pieces: Array<Piece | null> = [
 /* Chess src:s */
 let chess_pieces_images = {
     light: {
-        "rook": "https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg",
-        "queen": "https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg",
-        "king": "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg",
-        "pawn": "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
-        "bishop": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg",
-        "knight": "https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg",
+        "rook": "/pieces/white/rook.svg",
+        "queen": "/pieces/white/queen.svg",
+        "king": "/pieces/white/king.svg",
+        "pawn": "/pieces/white/pawn.svg",
+        "bishop": "/pieces/white/bishop.svg",
+        "knight": "/pieces/white/knight.svg",
     },
     dark: {
-        "rook": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg",
-        "queen": "https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg",
-        "king": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg",
-        "pawn": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg",
-        "bishop": "https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg",
-        "knight": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg",
+        "rook": "/pieces/black/rook.svg",
+        "queen": "/pieces/black/queen.svg",
+        "king": "/pieces/black/king.svg",
+        "pawn": "/pieces/black/pawn.svg",
+        "bishop": "/pieces/black/bishop.svg",
+        "knight": "/pieces/black/knight.svg",
     }
 }
 
@@ -133,6 +132,7 @@ const get_image_src = (name: PieceName, color: Color): string | null => {
 /* Event listeners */
 BOARD?.addEventListener("mousedown", (e) => {
     let element = e.target as HTMLElement;
+    (element.firstChild as HTMLElement).style.display = "none";
 
     let [x, y] = element.id.split("-").map((e) => parseInt(e));
     dragging_start = [x, y];
@@ -141,6 +141,7 @@ BOARD?.addEventListener("mousedown", (e) => {
     GHOST_PIECE!.style.display = "block";
 })
 BOARD?.addEventListener("mouseup", (e) => {
+    draw_grid(pieces);
     if (is_dragging) {
         GHOST_PIECE!.style.display = "none";
         dragging_piece = null;
