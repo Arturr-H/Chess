@@ -2,6 +2,9 @@
 /* HTML elements */
 const BOARD: HTMLElement | null = document.getElementById("board");
 const GHOST_PIECE: HTMLElement | null = document.getElementById("ghost-piece");
+const GAME_CONTAINER: HTMLElement | null = document.getElementById("game-container");
+const STATUS_CONTAINER: HTMLElement | null = document.getElementById("status-container");
+const TOAST_CONTAINER: HTMLElement | null = document.getElementById("toast-container");
 
 /* Constants */
 const GRID_SIZE: number = 8;
@@ -187,7 +190,6 @@ const move_piece = (pieces: any) => {
 /* Websockets */
 ws.onmessage = (e) => {
     let data = JSON.parse(e.data);
-    console.log(data);
 
     /* If no game was found - create game */
     switch (data.type) {
@@ -206,9 +208,7 @@ ws.onmessage = (e) => {
             }if (peer_addr === null) {
                 peer_addr = data.peer_addr;
             };
-            console.log("is", data.is_white);
             draw_grid(pieces);
-            alert("Created game!");
             break;
         case "start":
             if (is_white === null) {
@@ -216,15 +216,15 @@ ws.onmessage = (e) => {
             }if (peer_addr === null) {
                 peer_addr = data.peer_addr;
             };
-            console.log("is", data.is_white);
-            draw_grid(pieces);
+            GAME_CONTAINER!.style.display = "block";
+            STATUS_CONTAINER!.style.display = "none";
 
-            alert("Started game!");
+            draw_grid(pieces);
             game_id = data.game_id;
             break;
 
         case "error":
-            alert(data.message);
+            toast(data.message);
             break;
 
         case "win":
@@ -257,6 +257,25 @@ ws.onopen = (e) => {
     ws.send(JSON.stringify({
         "request_type": "join",
     }));
+}
+
+/* Show toast */
+const toast = (message: any) => {
+    let toast_id = "toast-" + Math.random();
+    
+    const toast = document.createElement("div");
+    toast.classList.add("toast");
+
+    const progressBar = document.createElement("div");
+    progressBar.classList.add("progress-bar");
+
+    toast.innerText = message;
+    toast.appendChild(progressBar);
+    TOAST_CONTAINER?.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
 
 /* Main */
