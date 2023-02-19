@@ -20,10 +20,6 @@ pub trait PieceMethods {
 
                 /* Spot with a piece */
                 if let Tile::Piece(piece) = board.get(to.0, to.1) {
-                    // TODO: look out for if king is checked & if pieces are blocking
-                    if board.is_in_check(Color::White) {
-                        dbg!("yes");
-                    }
                     
                     /* We can't take our own pieces */
                     if piece.color() != self.color() {
@@ -50,7 +46,7 @@ pub trait PieceMethods {
     fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &Board) -> bool { false }
 
     /// Get all possible moves on the board, relative to the piece
-    fn get_moves_local(&self) -> Vec<(i8, i8)>;
+    fn get_moves_local(&self, board: &Board) -> Vec<(i8, i8)>;
 
     /// Get the color
     fn color(&self) -> Color;
