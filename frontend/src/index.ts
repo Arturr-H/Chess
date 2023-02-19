@@ -24,7 +24,6 @@ let game_id: string | null = null;
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
 let dragging_start: [number, number] | null = null;
-let tiles: Array<HTMLElement> = [];
 let pieces: Array<Piece | null> = [
     /* Back */
     { name: "rook", color: Color.Black }, { name: "knight", color: Color.Black }, { name: "bishop", color: Color.Black }, 
@@ -79,7 +78,7 @@ interface Piece {
 
 /* Functions */
 const draw_grid = (pcs: any) => {
-    tiles = [];
+    pieces = pcs;
     BOARD!.innerHTML = "";
     (!is_white)
         ? BOARD!.style.flexDirection = "column-reverse"
@@ -109,7 +108,6 @@ const draw_grid = (pcs: any) => {
             }
 
             /* Append */
-            tiles.push(tile);
             ROW.appendChild(tile);
         };
         
