@@ -92,3 +92,50 @@ html, body {
     z-index: 5;
     transform: translate(-50%, -50%);
 }
+
+/* Toast */
+.toast-container {
+    position: absolute;
+    width: 50%;
+
+    bottom: 0;
+    display: inline-flex;
+    gap: 1vmin;
+    flex-direction: column-reverse;
+
+    box-sizing: border-box;
+    padding-bottom: 2vmin;
+}.toast-container > .toast {
+    width: 100%;
+    height: 6vmin;
+
+    background: white;
+    border-radius: 1vmin;
+
+    outline: 0.2vmin solid #ccc;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.05s ease-in-out;
+
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+    padding: 0 2vmin;
+}.toast-container > .toast > .progress-bar {
+    position: absolute;
+    height: 0.5vmin;
+    background: rgb(222, 133, 88);
+    bottom: 0;
+    left: 0;
+    animation: progress 3s linear forwards;
+}.toast-container > .toast:hover {
+    background: #f7f7f7;
+}
+
+/* Keyframes */
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
