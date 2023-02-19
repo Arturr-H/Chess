@@ -1,7 +1,7 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::Board };
 use serde_derive::Serialize;
-use super::utils::iterate_look_for_check;
+use super::utils::{iterate_look_for_check, get_possible_moves_in_direction};
 
 /* Rook */
 #[derive(Clone, Copy, Debug, Serialize)]
@@ -13,20 +13,22 @@ pub struct Rook {
 impl PieceMethods for Rook {
 
     /* All possible moves for rook */
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
-        vec![
-            /* Top */
-            (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8),
+    fn get_moves_local(&self, position: (i8, i8), board: &Board) -> Vec<(i8, i8)> {
+        let mut end = Vec::new();
+        
+        /* Top */
+        end.extend(&get_possible_moves_in_direction(board, position, (0, 1)));
 
-            /* Right */
-            (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0),
+        /* Bottom */
+        end.extend(&get_possible_moves_in_direction(board, position, (0, -1)));
 
-            /* Bottom */
-            (0, -1), (0, -2), (0, -3), (0, -4), (0, -5), (0, -6), (0, -7), (0, -8),
+        /* Right */
+        end.extend(&get_possible_moves_in_direction(board, position, (1, 0)));
 
-            /* Left */
-            (-1, 0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0), (-7, 0), (-8, 0)
-        ]
+        /* Left */
+        end.extend(&get_possible_moves_in_direction(board, position, (-1, 0)));
+
+        end
     }
     
     /* Constructor */
