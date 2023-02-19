@@ -39,3 +39,38 @@ pub fn iterate_look_for_check(x: i8, y: i8, board: &Board, color_of_king: Color,
 
     false
 }
+
+/*
+    This function will get all possible moves in a direction.
+    If the rook stands in the middle of the board with a pawn
+    infront of it (opposing pawn), it can move as far as
+    possible down, left and right. It can only move one move 
+    forwards (capturing the pawn).
+*/
+pub fn get_possible_moves_in_direction(board: &Board, from: (i8, i8), direction: (i8, i8)) -> Vec<(i8, i8)> {
+    let mut end = Vec::new();
+    let self_color = if let Tile::Piece(e) = board.get(from.0, from.1) 
+                    { e.color() } else { panic!("Should not panic") };
+
+    for i in 1..8 {
+        let position: (i8, i8) = (
+            direction.0*i + from.0,
+            direction.1*i + from.1
+        );
+
+        /* Check item */
+        match board.get(position.0, position.1) {
+            Tile::Piece(e) => {
+                if e.color() == self_color {
+                    break;
+                }else {
+                    end.push(position);
+                    break;
+                }
+            },
+            Tile::Empty => end.push(position)
+        }
+    };
+
+    end
+}
