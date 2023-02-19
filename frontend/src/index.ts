@@ -194,6 +194,12 @@ ws.onmessage = (e) => {
     switch (data.type) {
         case "move":
             move_piece(data.board.pieces);
+
+            /* Highlight moved tiles */
+            let { from0, from1, to0, to1 } = data;
+            document.getElementById(`${from0}-${from1}`)?.classList.add("highlight");
+            document.getElementById(`${to0}-${to1}`)?.classList.add("highlight");
+
             break;
         case "create":
             if (is_white === null) {
