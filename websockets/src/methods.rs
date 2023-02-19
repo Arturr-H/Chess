@@ -210,7 +210,8 @@ pub fn move_(
                     return write_origin(&peers, &[addr], &Message::Text(
                         json!({
                             "status": 404,
-                            "message": e
+                            "message": e,
+                            "type": "error"
                         }).to_string()
                     ));
                 }
