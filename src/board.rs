@@ -150,6 +150,50 @@ impl Board {
             Color::White => self.turn = Color::Black,
         }
     }
+
+    /// Check if color is checkmated
+    pub fn is_checkmated(&self, color: Color) -> bool {
+        if self.is_in_check(color) {
+
+            /* Iterate over all pieces of the own color, and
+                check if any piece can move to prevent checkmate */
+            for (y, row) in self.pieces.iter().enumerate() {
+                for (x, piece) in row.iter().enumerate() {
+                        if let Tile::Piece(p) = piece {
+                            /* Only grab the pieces with the same color */
+                            if p.color().is_white() == color.is_white() {
+                                let (x, y) = (x as i8, y as i8);
+
+                                /* Check every possible move */
+                                for (add_x, add_y) in p.methods().get_moves_local((x, y), &self) {
+
+                                    /* Clone the board, make the move, and later
+                                        check if that move prevented checkmate */
+                                    let mut board_clone = self.clone();
+                                    match board_clone.move_piece_to_coordinate((x, y), (x + add_x, y + add_y)) {
+                                        Ok(_) => (),
+                                        Err(_) => continue,
+                                    };
+                                    
+                                    if board_clone.is_in_check(color) {
+                                        continue;
+                                    }else {
+                                        return false
+                                    }
+                                };
+                            };
+                        };
+                    }
+            }
+
+            true
+        }
+        
+        /* Not in check - not checkmated */
+        else {
+            false
+        }
+    }
 }
 
 #[allow(unreachable_code)]
