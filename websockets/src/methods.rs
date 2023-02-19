@@ -1,6 +1,6 @@
 /* Imports */
 use serde_derive::Deserialize;
-use chess::game::Game;
+use chess::{game::Game, piece::Color};
 use serde_json::json;
 use std::{
     collections::HashMap,
@@ -35,7 +35,7 @@ pub fn create(
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.push(game);
-    
+
     /* Write the request origin */
     for recp in peers
         .iter()
@@ -48,7 +48,8 @@ pub fn create(
                     "status": 200,
                     "message": "Game has been created",
                     "type": "create",
-                    "is_white": is_white
+                    "is_white": is_white,
+                    "peer_addr": addr.to_string()
                 }).to_string()
             )
         ).ok();
@@ -89,7 +90,8 @@ pub fn join(
                     "message": "Game started!",
                     "game_id": game.id(),
                     "type": "start",
-                    "is_white": game.white().is_some()
+                    "is_white": game.white().unwrap() == &addr,
+                    "peer_addr": addr.to_string()
                 }).to_string()
             );
             
@@ -161,6 +163,29 @@ pub fn move_(
         Err(_) => return future::ok(())
     }.iter_mut() {
         if game.id() == &req.game_id {
+
+            /* Get the color of the `peer_addr` user */
+            let addr_color = if let Some(w) = game.white() {
+                if w == &addr { Color::White }
+                else { Color::Black }
+            }else if let Some(b) = game.black() {
+                if b == &addr { Color::Black }
+                else { Color::White }
+            }else {
+                Color::White
+            };
+
+            /* Check if it's the right players turn */
+            if game.board().turn() != addr_color {
+                return write_origin(&peers, &[addr], &Message::Text(
+                    json!({
+                        "status": 404,
+                        "message": "Not your turn",
+                        "type": "error"
+                    }).to_string()
+                ));
+            };
+
             match game.board_mut().move_piece_to_coordinate((from0, from1), (to0, to1)) {
                 /* Move possible */
                 Ok(_) => {
