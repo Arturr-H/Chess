@@ -18,7 +18,7 @@ enum Color {
 type PieceName = "rook" | "bishop" | "knight" | "queen" | "king" | "pawn";
 
 /* Mutable */
-let is_white: boolean = false;
+let is_white: boolean | null = null;
 let game_id: string | null = null;
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
@@ -201,13 +201,21 @@ ws.onmessage = (e) => {
             case "move":
                 move_piece(data.board.pieces);
                 break;
-            case "join":
-                alert("Joined game!");
-                break;
             case "create":
+                if (is_white === null) {
+                    is_white = data.is_white;
+                };
+                console.log("is", data.is_white);
+                draw_grid(pieces);
                 alert("Created game!");
                 break;
             case "start":
+                if (is_white === null) {
+                    is_white = data.is_white;
+                };
+                console.log("is", data.is_white);
+                draw_grid(pieces);
+
                 alert("Started game!");
                 game_id = data.game_id;
                 break;
