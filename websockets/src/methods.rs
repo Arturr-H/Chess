@@ -197,7 +197,11 @@ pub fn move_(
                             "status": 200,
                             "message": "Move successful",
                             "board": game.board(),
-                            "type": "move"
+                            "type": "move",
+                            "from0": from0,
+                            "from1": from1,
+                            "to0": to0,
+                            "to1": to1,
                         }).to_string()
                     ));
                 },
