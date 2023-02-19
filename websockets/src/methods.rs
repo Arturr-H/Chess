@@ -192,6 +192,24 @@ pub fn move_(
                     /* Switch player */
                     game.board_mut().toggle_turn();
 
+                    /* Look if is in checkmate */
+                    if game.board().is_checkmated(game.board().turn()) {
+                        return write_origin(
+                            &peers,
+                            &[*game.black().unwrap(), *game.white().unwrap()],
+                            &Message::Text(json!({
+                                "status": 200,
+                                "type": "win",
+                                "board": game.board(),
+                                "lost": game.board().turn(),
+                                "from0": from0,
+                                "from1": from1,
+                                "to0": to0,
+                                "to1": to1,
+                            }).to_string())
+                        )
+                    }
+
                     return write_origin(&peers, &[*game.black().unwrap(), *game.white().unwrap()], &Message::Text(
                         json!({
                             "status": 200,
