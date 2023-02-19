@@ -28,13 +28,14 @@ pub fn create(
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
 
     /* Create game */
+    let game = Game::new(addr);
+    let is_white = game.white().is_some();
+
     match games.lock() {
         Ok(e) => e,
         Err(_) => return future::ok(())
-    }.push(
-        Game::new(addr)
-    );
-
+    }.push(game);
+    
     /* Write the request origin */
     for recp in peers
         .iter()
@@ -46,7 +47,8 @@ pub fn create(
                 json!({
                     "status": 200,
                     "message": "Game has been created",
-                    "type": "create"
+                    "type": "create",
+                    "is_white": is_white
                 }).to_string()
             )
         ).ok();
@@ -86,7 +88,8 @@ pub fn join(
                     "status": 200,
                     "message": "Game started!",
                     "game_id": game.id(),
-                    "type": "start"
+                    "type": "start",
+                    "is_white": game.white().is_some()
                 }).to_string()
             );
             
