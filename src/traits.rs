@@ -43,7 +43,7 @@ pub trait PieceMethods {
 
     /// Get all possible moves on the board, relative to the piece
     #[allow(unused_variables)]
-    fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &Board) -> bool { false }
+    fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &Board) -> bool;
 
     /// Get all possible moves on the board, relative to the piece
     fn get_moves_local(&self, position: (i8, i8), board: &Board) -> Vec<(i8, i8)>;
