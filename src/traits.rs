@@ -13,7 +13,7 @@ pub trait PieceMethods {
     /// so, return false
     fn can_move_local(&self, from: (i8, i8), to: (i8, i8), board: &Board) -> bool {
         /* Check if `to` is in local move array */
-        for (add_x, add_y) in self.get_moves_local() {
+        for (add_x, add_y) in self.get_moves_local(from, board) {
 
             /* If the move seems possible */
             if (from.0 + add_x, from.1 + add_y) == to {
@@ -46,7 +46,7 @@ pub trait PieceMethods {
     fn is_checking_king(&self, color_of_king: Color, x: i8, y: i8, board: &Board) -> bool { false }
 
     /// Get all possible moves on the board, relative to the piece
-    fn get_moves_local(&self, board: &Board) -> Vec<(i8, i8)>;
+    fn get_moves_local(&self, position: (i8, i8), board: &Board) -> Vec<(i8, i8)>;
 
     /// Get the color
     fn color(&self) -> Color;
