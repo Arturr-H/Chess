@@ -1,5 +1,5 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::Tile };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece, invert_local_moves }, board::{Tile, Board} };
 use serde_derive::Serialize;
 
 /* King */
@@ -19,7 +19,7 @@ const LOCAL_MOVES:&[(i8, i8)] = &[
 impl PieceMethods for King {
 
     /* All possible moves for bishop */
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
+    fn get_moves_local(&self, _: (i8, i8), _: &Board) -> Vec<(i8, i8)> {
         if self.color() == Color::White {
             LOCAL_MOVES.to_vec()
         }else {
