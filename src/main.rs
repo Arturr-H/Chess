@@ -30,12 +30,10 @@ async fn main() -> std::io::Result<()> {
 
             /* Static files */
             .service(actix_files::Files::new("/static", "./frontend/src/").index_file(""))
+            .service(actix_files::Files::new("/pieces", "./frontend/pieces/").index_file(""))
             .service(routes::index)
             .service(routes::js_dist)
             .service(routes::js_htmx)
-            
-            .service(routes::move_)
-
     })
     .workers(12)
     .bind(("127.0.0.1", 8080))?
