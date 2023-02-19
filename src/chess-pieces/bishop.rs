@@ -1,7 +1,7 @@
 /* Imports */
-use crate::{ traits::PieceMethods, piece::{ Color, Piece } };
+use crate::{ traits::PieceMethods, piece::{ Color, Piece }, board::Board };
 use serde_derive::Serialize;
-use super::utils::iterate_look_for_check;
+use super::utils::{iterate_look_for_check, get_possible_moves_in_direction};
 
 /* Bishop */
 #[derive(Clone, Copy, Debug, Serialize)]
@@ -13,20 +13,22 @@ pub struct Bishop {
 impl PieceMethods for Bishop {
 
     /* All possible moves for bishop */
-    fn get_moves_local(&self) -> Vec<(i8, i8)> {
-        vec![
-            /* Top Right */
-            (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8),
+    fn get_moves_local(&self, position: (i8, i8), board: &Board) -> Vec<(i8, i8)> {
+        let mut end = Vec::new();
 
-            /* Bottom Right */
-            (1, -1), (2, -2), (3, -3), (4, -4), (5, -5), (6, -6), (7, -7), (8, -8),
+        /* Top Right */
+        end.extend(&get_possible_moves_in_direction(board, position, (1, 1)));
+        
+        /* Bottom Right */
+        end.extend(&get_possible_moves_in_direction(board, position, (1, -1)));
+        
+        /* Bottom Left */
+        end.extend(&get_possible_moves_in_direction(board, position, (-1, -1)));
+        
+        /* Top Left */
+        end.extend(&get_possible_moves_in_direction(board, position, (-1, 1)));
 
-            /* Bottom Left */
-            (-1, -1), (-2, -2), (-3, -3), (-4, -4), (-5, -5), (-6, -6), (-7, -7), (-8, -8),
-
-            /* Top Left */
-            (-1, 1), (-2, 2), (-3, 3), (-4, 4), (-5, 5), (-6, 6), (-7, 7), (-8, 8)
-        ]
+        end
     }
 
     /* Constructor */
