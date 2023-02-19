@@ -57,7 +57,7 @@ let chess_pieces_images = {
         "queen": "https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg",
         "king": "https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg",
         "pawn": "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
-        "bishop": "https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg",
+        "bishop": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg",
         "knight": "https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg",
     },
     dark: {
