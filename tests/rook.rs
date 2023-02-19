@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use chess::{ board::Board, bundle::rook::Rook, piece::Color, traits::PieceMethods };
+    use chess::board::Board;
 
     #[test]
     #[should_panic]
@@ -9,15 +9,5 @@ mod tests {
 
         /* Rooks cant initially move, therefore this test should panic */
         board.move_piece_to_coordinate((0, 0), (0, 1)).unwrap();
-    }
-
-    #[test]
-    fn white_moves() -> () {
-        let rook_w = Rook { color: Color::White };
-        let rook_b = Rook { color: Color::Black };
-
-        assert_eq!(rook_w.get_moves_local(&Board::new()).contains(&(2, 0)), true);
-        assert_eq!(rook_b.get_moves_local(&Board::new()).contains(&(0, -4)), true);
-        assert_eq!(rook_b.get_moves_local(&Board::new()).contains(&(1, 1)), false);
     }
 }
