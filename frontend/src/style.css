@@ -19,13 +19,13 @@ html, body {
 
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
 }
 
 /* Board */
 .board {
-    width: 50vmax;
+    width: 75vmin;
     aspect-ratio: 1;
-    border-radius: 1vmax;
 
     display: flex;
     flex-direction: column;
@@ -43,31 +43,41 @@ html, body {
     height: 100%;
 
     background: var(--tile-1);
-
+    position: relative;
     display: flex;
     justify-content: center;
         align-items: center;
     
     box-sizing: border-box;
-    padding: 0.5rem;
+    padding: 1.5vmin;
     cursor: pointer;
 
+}.board > .row > .tile::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: url(/static/assets/tile-overlay.svg);
+    z-index: 1;
+    transform: scale(1.1);
 }.board > .row > .tile:hover {
     filter: brightness(90%);
-    outline: 0.2vmax solid black;
+    /* outline: 0.2vmax solid black; */
 }.board > .row:nth-child(odd) > .tile:nth-child(odd), .board > .row:nth-child(even) > .tile:nth-child(even) {
     background: var(--tile-2);
-}.board > .row:nth-child(odd) > .tile:nth-child(odd):hover, .board > .row:nth-child(even) > .tile:nth-child(even):hover {
-    filter: brightness(90%);
-    outline: 0.2vmax solid black;
+}.board > .row:nth-child(odd) > .tile:nth-child(odd)::before, .board > .row:nth-child(even) > .tile:nth-child(even)::before {
+    content: none;
 }.board > .row > .tile > img.piece {
     width: 100%;
     height: 100%;
 
     user-select: none;
     pointer-events: none;
+    z-index: 2;
 }.board > .row > .tile.highlight {
-    background: #b2df6c;
+    background: #b2df6c !important;
+}.board > .row > .tile.highlight::before {
+    background: url(/static/assets/tile-overlay-highlight.svg);
 }.ghost-piece {
     position: absolute;
     width: 5rem;
