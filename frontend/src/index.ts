@@ -227,6 +227,18 @@ ws.onmessage = (e) => {
             alert(data.message);
             break;
 
+        case "win":
+            move_piece(data.board.pieces);
+
+            /* Highlight moved tiles */
+            let { from00, from10, to00, to10 } = data;
+
+            document.getElementById(`${from00}-${from10}`)?.classList.add("highlight");
+            document.getElementById(`${to00}-${to10}`)?.classList.add("highlight");
+
+            alert(data.lost + " lost");
+            break;
+
         case "game_not_found":
             ws.send(JSON.stringify({
                 "request_type": "create",
