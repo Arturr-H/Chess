@@ -16,8 +16,8 @@ mod tests {
         let bishop_w = Bishop { color: Color::White };
         let bishop_b = Bishop { color: Color::Black };
 
-        assert_eq!(bishop_w.get_moves_local().contains(&(1, 1)), true);
-        assert_eq!(bishop_b.get_moves_local().contains(&(-1, 1)), true);
-        assert_eq!(bishop_b.get_moves_local().contains(&(0, 1)), false);
+        assert_eq!(bishop_w.get_moves_local(&Board::new()).contains(&(1, 1)), true);
+        assert_eq!(bishop_b.get_moves_local(&Board::new()).contains(&(-1, 1)), true);
+        assert_eq!(bishop_b.get_moves_local(&Board::new()).contains(&(0, 1)), false);
     }
 }

@@ -21,8 +21,8 @@ mod tests {
         let knight_w = Knight { color: Color::White };
         let knight_b = Knight { color: Color::Black };
 
-        assert_eq!(knight_w.get_moves_local().contains(&(2, 1)),   true);
-        assert_eq!(knight_w.get_moves_local().contains(&(-1, -2)), true);
-        assert_eq!(knight_b.get_moves_local().contains(&(0, 1)),   false);
+        assert_eq!(knight_w.get_moves_local(&Board::new()).contains(&(2, 1)),   true);
+        assert_eq!(knight_w.get_moves_local(&Board::new()).contains(&(-1, -2)), true);
+        assert_eq!(knight_b.get_moves_local(&Board::new()).contains(&(0, 1)),   false);
     }
 }
