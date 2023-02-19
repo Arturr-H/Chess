@@ -19,6 +19,7 @@ type PieceName = "rook" | "bishop" | "knight" | "queen" | "king" | "pawn";
 
 /* Mutable */
 let is_white: boolean | null = null;
+let peer_addr: string | null = null;
 let game_id: string | null = null;
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
@@ -190,39 +191,47 @@ ws.onmessage = (e) => {
     console.log(data);
 
     /* If no game was found - create game */
-    if (data.status !== 200) {
-        if (data.status === 404 && data.type === "game_not_found") {
+    switch (data.type) {
+        case "move":
+            move_piece(data.board.pieces);
+            break;
+        case "create":
+            if (is_white === null) {
+                is_white = data.is_white;
+            }if (peer_addr === null) {
+                peer_addr = data.peer_addr;
+            };
+            console.log("is", data.is_white);
+            draw_grid(pieces);
+            alert("Created game!");
+            break;
+        case "start":
+            if (is_white === null) {
+                is_white = data.is_white;
+            }if (peer_addr === null) {
+                peer_addr = data.peer_addr;
+            };
+            console.log("is", data.is_white);
+            draw_grid(pieces);
+
+            alert("Started game!");
+            game_id = data.game_id;
+            break;
+
+        case "error":
+            alert(data.message);
+            break;
+
+        case "game_not_found":
             ws.send(JSON.stringify({
                 "request_type": "create",
             }));
-        };
-    }else {
-        switch (data.type) {
-            case "move":
-                move_piece(data.board.pieces);
-                break;
-            case "create":
-                if (is_white === null) {
-                    is_white = data.is_white;
-                };
-                console.log("is", data.is_white);
-                draw_grid(pieces);
-                alert("Created game!");
-                break;
-            case "start":
-                if (is_white === null) {
-                    is_white = data.is_white;
-                };
-                console.log("is", data.is_white);
-                draw_grid(pieces);
-
-                alert("Started game!");
-                game_id = data.game_id;
-                break;
-            default:
-                break;
-        }
+            break;
+            
+        default:
+            break;
     }
+
 }
 ws.onclose = (e) => {
     alert("Connection closed!");
