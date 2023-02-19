@@ -54,14 +54,14 @@ pub fn get_possible_moves_in_direction(board: &Board, from: (i8, i8), direction:
 
     for i in 1..8 {
         let position: (i8, i8) = (
-            direction.0*i + from.0,
-            direction.1*i + from.1
+            direction.0*i,
+            direction.1*i
         );
 
         if position.0 > 7 || position.1 > 7 { break; };
 
         /* Check item */
-        match board.get(position.0, position.1) {
+        match board.get(from.0 + position.0, from.1 + position.1) {
             Tile::Piece(e) => {
                 if e.color() == self_color {
                     break;
