@@ -64,3 +64,19 @@ pub fn invert_local_moves(moves: &[(i8, i8)]) -> Vec<(i8, i8)> {
 /// Piece color
 #[derive(Clone, Copy, PartialEq, Debug, Serialize)]
 pub enum Color { White, Black }
+
+/* Method implementations for color */
+impl Color {
+    pub fn is_black(&self) -> bool {
+        match self {
+            Color::Black => true,
+            Color::White => false
+        }
+    }
+    pub fn is_white(&self) -> bool {
+        match self {
+            Color::White => true,
+            Color::Black => false
+        }
+    }
+}
