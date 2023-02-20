@@ -223,25 +223,6 @@ pub fn move_(
                         },
                     };
 
-                    /* Look if is in stalemated */
-                    if game.board().is_stalemated() {
-                        return write_origin(
-                            &peers,
-                            &[*game.black().unwrap(), *game.white().unwrap()],
-                            &Message::Text(json!({
-                                "status": 200,
-                                "type": "stalemate",
-
-                                "board": game.board(),
-                                "lost": game.board().turn(),
-                                "from0": from0,
-                                "from1": from1,
-                                "to0": to0,
-                                "to1": to1,
-                            }).to_string())
-                        )
-                    }
-
                     /* Look if is in checkmate */
                     if game.board().is_checkmated(game.board().turn()) {
                         return write_origin(
@@ -261,6 +242,25 @@ pub fn move_(
 
                                 "time_left_black": game.black_time_remaining(),
                                 "time_left_white": game.white_time_remaining(),
+                            }).to_string())
+                        )
+                    }
+
+                    /* Look if is in stalemated */
+                    if game.board().is_stalemated() {
+                        return write_origin(
+                            &peers,
+                            &[*game.black().unwrap(), *game.white().unwrap()],
+                            &Message::Text(json!({
+                                "status": 200,
+                                "type": "stalemate",
+
+                                "board": game.board(),
+                                "lost": game.board().turn(),
+                                "from0": from0,
+                                "from1": from1,
+                                "to0": to0,
+                                "to1": to1,
                             }).to_string())
                         )
                     }
