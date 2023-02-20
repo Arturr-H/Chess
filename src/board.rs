@@ -215,6 +215,53 @@ impl Board {
             false
         }
     }
+
+    /// Check if color is stalemated
+    pub fn is_stalemated(&self) -> bool {
+        let mut is_stalemated: bool = true;
+
+        /* Iterate over all pieces of the own color, and
+            check if any piece can move to prevent checkmate */
+        'outer: for (y, row) in self.pieces.iter().enumerate() {
+            for (x, piece) in row.iter().enumerate() {
+                let (x, y) = (x as i8, y as i8);
+
+                if let Tile::Piece(p) = piece {
+                    /* Only grab the pieces with the same color */
+                    if p.color().is_white() == self.turn().is_white() {
+                        let moves = p.methods().get_moves_local((x, y), &self);
+                        if moves.len() > 0 {
+
+                            /* Check if any of those moves won't result in check */
+                            let mut can_be_saved: bool = false;
+                            for (add_x, add_y) in moves {
+                                /* Clone board and test */
+                                let mut board_clone = self.clone();
+                                match board_clone.move_piece_to_coordinate((x, y), (x + add_x, y + add_y)) {
+                                    Ok(_) => (),
+                                    Err(_) => continue
+                                };
+
+                                if board_clone.is_in_check(self.turn()) {
+                                    continue;
+                                }else {
+                                    can_be_saved = true;
+                                    break
+                                }
+                            };
+
+                            if can_be_saved {
+                                is_stalemated = false;
+                                break 'outer;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+
+        is_stalemated
+    }
 }
 
 #[allow(unreachable_code)]
