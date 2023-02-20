@@ -4,6 +4,7 @@ use std::net::SocketAddr;
 use super::board::Board;
 use uuid;
 use rand::{self, Rng};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /* Main */
 pub struct Game {
@@ -16,7 +17,19 @@ pub struct Game {
     black: Option<SocketAddr>,
 
     /* Game-ID */
-    id: String
+    id: String,
+
+    /* Ending time for each player (MS) */
+    white_time_remaining: u128,
+    black_time_remaining: u128,
+
+    /* Each players last time their clock should be ticking down from (UNIX) */
+    white_latest_time: u128,
+    black_latest_time: u128,
+
+    /* If each player has made their first move, time will start */
+    white_has_moved: bool,
+    black_has_moved: bool,
 }
 
 /* Method implementations */
@@ -26,21 +39,37 @@ impl Game {
     /// created the game.
     pub fn new(player: SocketAddr) -> Self {
         let player_1_white = rand::thread_rng().gen_bool(0.5f64);
+        let five_minutes = 1000 * 60 * 5;
+
+        /* Shared fields */
+        let shared_fields = Self {
+            white: None,
+            black: None,
+
+            id: uuid::Uuid::new_v4().as_hyphenated().to_string(),
+            board: Board::new(),
+            white_time_remaining: five_minutes,
+            black_time_remaining: five_minutes,
+            black_latest_time: get_unix_time(),
+            white_latest_time: get_unix_time(),
+            white_has_moved: false,
+            black_has_moved: false,
+        };
 
         /* If player 1 should be white */
         if player_1_white {
             Self {
-                board: Board::new(),
                 white: Some(player),
                 black: None,
-                id: uuid::Uuid::new_v4().as_hyphenated().to_string()
+
+                ..shared_fields
             }
         }else {
             Self {
-                board: Board::new(),
                 white: None,
                 black: Some(player),
-                id: uuid::Uuid::new_v4().as_hyphenated().to_string()
+
+                ..shared_fields
             }
         }
     }
@@ -79,4 +108,28 @@ impl Game {
     pub fn id(&self) -> &String { &self.id }
     pub fn board(&self) -> &Board { &self.board }
     pub fn board_mut(&mut self) -> &mut Board { &mut self.board }
+
+    /* Time */
+    pub fn black_time_remaining(&self) -> u128 { self.black_time_remaining }
+    pub fn white_time_remaining(&self) -> u128 { self.white_time_remaining }
+    pub fn black_time_remaining_mut(&mut self) -> &mut u128 { &mut self.black_time_remaining }
+    pub fn white_time_remaining_mut(&mut self) -> &mut u128 { &mut self.white_time_remaining }
+
+    /* Time UNIX */
+    pub fn black_latest_time(&self) -> u128 { self.black_latest_time }
+    pub fn white_latest_time(&self) -> u128 { self.white_latest_time }
+    pub fn black_latest_time_mut(&mut self) -> &mut u128 { &mut self.black_latest_time }
+    pub fn white_latest_time_mut(&mut self) -> &mut u128 { &mut self.white_latest_time }
+
+    /* Has moved */
+    pub fn black_has_moved(&self) -> bool { self.black_has_moved }
+    pub fn white_has_moved(&self) -> bool { self.white_has_moved }
+    pub fn white_has_moved_mut(&mut self) -> &mut bool { &mut self.white_has_moved }
+    pub fn black_has_moved_mut(&mut self) -> &mut bool { &mut self.black_has_moved }
+}
+
+pub fn get_unix_time() -> u128 {
+    let now = SystemTime::now();
+    let unix_time = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
+    unix_time.as_millis()
 }
