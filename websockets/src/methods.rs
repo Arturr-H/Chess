@@ -1,6 +1,6 @@
 /* Imports */
 use serde_derive::Deserialize;
-use chess::{game::Game, piece::Color};
+use chess::{game::{Game, self}, piece::Color};
 use serde_json::json;
 use std::{
     collections::HashMap,
@@ -91,7 +91,9 @@ pub fn join(
                     "game_id": game.id(),
                     "type": "start",
                     "is_white": game.white().unwrap() == &addr,
-                    "peer_addr": addr.to_string()
+                    "peer_addr": addr.to_string(),
+                    "white_time_left": game.white_time_remaining(),
+                    "black_time_left": game.black_time_remaining()
                 }).to_string()
             );
             
@@ -192,6 +194,35 @@ pub fn move_(
                     /* Switch player */
                     game.board_mut().toggle_turn();
 
+                    /* If we should start the timer or not for both players */
+                    let start_timer: bool = game.white_has_moved() && game.black_has_moved();
+
+                    /* Subtract time */
+                    match game.board().turn() {
+                        Color::Black => {
+                            if start_timer {
+                                *game.white_time_remaining_mut() -= game::get_unix_time() - game.white_latest_time();
+                                *game.black_latest_time_mut() = game::get_unix_time();
+                            }else {
+                                *game.black_latest_time_mut() = game::get_unix_time();
+                                *game.white_latest_time_mut() = game::get_unix_time();
+                            }
+                                
+                            *game.white_has_moved_mut() = true;
+                        },
+                        Color::White => {
+                            if start_timer {
+                                *game.black_time_remaining_mut() -= game::get_unix_time() - game.black_latest_time();
+                                *game.white_latest_time_mut() = game::get_unix_time();
+                            }else {
+                                *game.black_latest_time_mut() = game::get_unix_time();
+                                *game.white_latest_time_mut() = game::get_unix_time();
+                            }
+
+                            *game.black_has_moved_mut() = true;
+                        },
+                    };
+
                     /* Look if is in checkmate */
                     if game.board().is_checkmated(game.board().turn()) {
                         return write_origin(
@@ -206,6 +237,11 @@ pub fn move_(
                                 "from1": from1,
                                 "to0": to0,
                                 "to1": to1,
+
+                                "turn": game.board().turn(),
+
+                                "time_left_black": game.black_time_remaining(),
+                                "time_left_white": game.white_time_remaining(),
                             }).to_string())
                         )
                     }
@@ -220,6 +256,11 @@ pub fn move_(
                             "from1": from1,
                             "to0": to0,
                             "to1": to1,
+
+                            "turn": game.board().turn(),
+
+                            "time_left_black": game.black_time_remaining(),
+                            "time_left_white": game.white_time_remaining(),
                         }).to_string()
                     ));
                 },
