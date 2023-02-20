@@ -23,7 +23,12 @@ html, body {
 }
 
 /* Board */
-.board {
+.game-container {
+    flex-direction: column;
+    gap: 1vmin;
+
+    display: none; /* Will be changed in js */
+}.board {
     width: 75vmin;
     aspect-ratio: 1;
 
@@ -132,6 +137,25 @@ html, body {
     animation: progress 3s linear forwards;
 }.toast-container > .toast:hover {
     background: #f7f7f7;
+}
+
+/* Clock */
+.clock {
+    width: 12vmin;
+    height: 6vmin;
+
+    background: #212121;
+    color: #fff;
+
+    display: flex;
+    justify-content: center;
+        align-items: center;
+
+    font-size: 3vmin;
+}.clock.right {
+    margin-left: auto;
+}.clock.clock-active {
+    background: #769656;
 }
 
 /* Keyframes */
