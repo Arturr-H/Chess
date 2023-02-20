@@ -5,6 +5,9 @@ const GHOST_PIECE: HTMLElement | null = document.getElementById("ghost-piece");
 const GAME_CONTAINER: HTMLElement | null = document.getElementById("game-container");
 const STATUS_CONTAINER: HTMLElement | null = document.getElementById("status-container");
 const TOAST_CONTAINER: HTMLElement | null = document.getElementById("toast-container");
+const CLOCK_WHITE: HTMLElement | null = document.getElementById("clock-white");
+const CLOCK_BLACK: HTMLElement | null = document.getElementById("clock-black");
+
 
 /* Constants */
 const GRID_SIZE: number = 8;
@@ -26,6 +29,9 @@ let game_id: string | null = null;
 let is_dragging: boolean = false;
 let dragging_piece: Piece | null = null;
 let dragging_start: [number, number] | null = null;
+let total_moves: number = 0; // Used to determine if counter should be decremented
+let white_clock_active: boolean = false;
+let black_clock_active: boolean = false;
 let pieces: Array<Piece | null> = [
     /* Back */
     { name: "rook", color: Color.Black }, { name: "knight", color: Color.Black }, { name: "bishop", color: Color.Black }, 
@@ -83,8 +89,14 @@ const draw_grid = (pcs: any) => {
     pieces = pcs;
     BOARD!.innerHTML = "";
     (!is_white)
-        ? BOARD!.style.flexDirection = "column-reverse"
-        : BOARD!.style.flexDirection = "column"
+        ? (
+            BOARD!.style.flexDirection = "column-reverse",
+            GAME_CONTAINER!.style.flexDirection = "column-reverse"
+        )
+        : (
+            BOARD!.style.flexDirection = "column",
+            GAME_CONTAINER!.style.flexDirection = "column"
+        )
 
     for (let y = 0; y < GRID_SIZE; y++) {
         const ROW: HTMLElement = document.createElement("div");
@@ -201,6 +213,13 @@ ws.onmessage = (e) => {
             document.getElementById(`${from0}-${from1}`)?.classList.add("highlight");
             document.getElementById(`${to0}-${to1}`)?.classList.add("highlight");
 
+            /* Update moves */
+            total_moves++;
+            
+            /* Update clocks */
+            update_clock("white", data.time_left_white, data.turn);
+            update_clock("black", data.time_left_black, data.turn);
+            
             break;
         case "create":
             if (is_white === null) {
@@ -216,7 +235,7 @@ ws.onmessage = (e) => {
             }if (peer_addr === null) {
                 peer_addr = data.peer_addr;
             };
-            GAME_CONTAINER!.style.display = "block";
+            GAME_CONTAINER!.style.display = "inline-flex";
             STATUS_CONTAINER!.style.display = "none";
 
             draw_grid(pieces);
@@ -235,6 +254,10 @@ ws.onmessage = (e) => {
 
             document.getElementById(`${from00}-${from10}`)?.classList.add("highlight");
             document.getElementById(`${to00}-${to10}`)?.classList.add("highlight");
+
+            /* Update clocks */
+            update_clock("white", data.time_left_white, data.turn);
+            update_clock("black", data.time_left_black, data.turn);
 
             alert(data.lost + " lost");
             break;
@@ -276,6 +299,59 @@ const toast = (message: any) => {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+let white_clock_interval: any = null;
+let black_clock_interval: any = null;
+const update_clock = (clock: "black" | "white", ms: number, turn: "White" | "Black") => {
+    let seconds = Math.floor(ms / 1000);
+    let minutes = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+
+    let seconds_str = seconds.toString();
+    let minutes_str = minutes.toString();
+
+    if (seconds < 10) { seconds_str = "0" + seconds_str; }
+    if (minutes < 10) { minutes_str = "0" + minutes_str; }
+    
+    if (clock == "black") {
+        CLOCK_BLACK!.innerText = minutes_str + ":" + seconds_str;
+        if (black_clock_interval !== null) { clearInterval(black_clock_interval); };
+    }else {
+        CLOCK_WHITE!.innerText = minutes_str + ":" + seconds_str;
+        if (white_clock_interval !== null) { clearInterval(white_clock_interval); };
+    }
+
+    if (white_clock_active) { CLOCK_WHITE!.classList.add("clock-active"); }
+    else { CLOCK_WHITE!.classList.remove("clock-active"); }
+
+    if (black_clock_active) { CLOCK_BLACK!.classList.add("clock-active"); }
+    else { CLOCK_BLACK!.classList.remove("clock-active"); }
+
+    if (ms <= 0) {
+        if (clock == "black") {
+            alert("White won");
+        }else {
+            alert("Black won");
+        }
+        return;
+    }else if (total_moves >= 2) {
+        if (clock == "black" && turn == "Black") {
+            white_clock_active = false;
+            black_clock_active = true;
+
+            black_clock_interval = setTimeout(() => {
+                update_clock(clock, ms - 100, turn);
+            }, 100);
+        }else if (clock == "white" && turn == "White") {
+            white_clock_active = true;
+            black_clock_active = false;
+
+            white_clock_interval = setTimeout(() => {
+                update_clock(clock, ms - 100, turn);
+            }, 100);
+        }
+    }
 }
 
 /* Main */
