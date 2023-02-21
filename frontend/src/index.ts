@@ -221,6 +221,7 @@ ws.onmessage = (e) => {
             update_clock("black", data.time_left_black, data.turn);
             
             break;
+
         case "create":
             if (is_white === null) {
                 is_white = data.is_white;
@@ -229,6 +230,7 @@ ws.onmessage = (e) => {
             };
             draw_grid(pieces);
             break;
+
         case "start":
             if (is_white === null) {
                 is_white = data.is_white;
@@ -246,6 +248,9 @@ ws.onmessage = (e) => {
             toast(data.message);
             break;
 
+        case "stalemate":
+            alert("Stalemate");
+
         case "win":
             move_piece(data.board.pieces);
 
@@ -262,10 +267,18 @@ ws.onmessage = (e) => {
             alert(data.lost + " lost");
             break;
 
+        case "update_games_listing":
+            display_games(data.games);
+            break;
+            
         case "game_not_found":
             ws.send(JSON.stringify({
                 "request_type": "create",
             }));
+            break;
+
+        case "games_listing":
+            display_games(data.games);
             break;
             
         default:
@@ -277,15 +290,18 @@ ws.onclose = (e) => {
     alert("Connection closed!");
 }
 ws.onopen = (e) => {
+
+
+}
+
+const CREATE_SHIT = () => {
     ws.send(JSON.stringify({
-        "request_type": "join",
+        "request_type": "create",
     }));
 }
 
 /* Show toast */
 const toast = (message: any) => {
-    let toast_id = "toast-" + Math.random();
-    
     const toast = document.createElement("div");
     toast.classList.add("toast");
 
