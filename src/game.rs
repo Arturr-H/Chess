@@ -19,6 +19,9 @@ pub struct Game {
     /* Game-ID */
     id: String,
 
+    /* Amount of minutes for each player */
+    minutes: u128,
+
     /* Ending time for each player (MS) */
     white_time_remaining: u128,
     black_time_remaining: u128,
@@ -37,7 +40,7 @@ impl Game {
     /// Create a new `Game` struct. The `player`
     /// parameter is the uuid of the player who
     /// created the game.
-    pub fn new(player: SocketAddr) -> Self {
+    pub fn new(player: SocketAddr, minutes: u128) -> Self {
         let player_1_white = rand::thread_rng().gen_bool(0.5f64);
         let five_minutes = 1000 * 60 * 5;
 
@@ -54,6 +57,7 @@ impl Game {
             white_latest_time: get_unix_time(),
             white_has_moved: false,
             black_has_moved: false,
+            minutes,
         };
 
         /* If player 1 should be white */
@@ -126,6 +130,10 @@ impl Game {
     pub fn white_has_moved(&self) -> bool { self.white_has_moved }
     pub fn white_has_moved_mut(&mut self) -> &mut bool { &mut self.white_has_moved }
     pub fn black_has_moved_mut(&mut self) -> &mut bool { &mut self.black_has_moved }
+
+    /* Minutes */
+    pub fn minutes(&self) -> u128 { self.minutes }
+    pub fn minutes_mut(&mut self) -> &mut u128 { &mut self.minutes }
 }
 
 pub fn get_unix_time() -> u128 {
