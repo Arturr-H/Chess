@@ -158,6 +158,55 @@ html, body {
     background: #769656;
 }
 
+/* Games listing */
+.games-container {
+    width: calc(100% - 10vmin);
+    height: 50vmin;
+    background: #eee;
+
+    box-sizing: border-box;
+    padding: 2vmin;
+
+    border: 0.2vmin solid #ccc;
+    border-radius: 2.5vmin;
+}.games-container > .game-section {
+    width: 100%;
+    height: 6vmin;
+    display: block;
+    background: #fff;
+
+    border: 0.2vmin solid #ccc;
+    border-radius: 0.75vmin;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+        align-items: center;
+
+    box-sizing: border-box;
+    padding: 0 2vmin;
+    cursor: pointer;
+}.games-container > .game-section > p {
+    padding: 0;
+    margin: 0;
+
+    color: #999;
+}.games-container > .game-section > p.highlight {
+    color: #000;
+}
+
+/* Home */
+.home-container {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+        align-items: center;
+
+    flex-direction: column;
+}
+
 /* Keyframes */
 @keyframes progress {
     from { width: 0%; }
