@@ -11,7 +11,7 @@ use std::{
 use tokio_tungstenite::tungstenite::protocol::Message;
 use futures_channel::mpsc::UnboundedSender;
 use futures_util::future;
-use crate::{ChessGames, methods::{create, join, move_}};
+use crate::{ChessGames, methods::{create, join, move_, list_games}};
 
 /* Main */
 pub fn handle_request(
@@ -41,6 +41,7 @@ pub fn handle_request(
                 "create" => return create(peers, games, addr),
                 "join" => return join(peers, games, addr),
                 "move" => return move_(text, peers, games, addr),
+                "list_games" => return list_games(peers, games, addr),
                 _ => panic!()
             }
         },
