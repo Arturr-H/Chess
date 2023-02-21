@@ -35,6 +35,7 @@
 
         <!-- Scripts -->
         <script defer src="/dist/index.js"></script>
+        <script defer src="/dist/home.js"></script>
         <script defer src="/htmx.min.js"></script>
 
 		<!-- Fonts -->
@@ -51,8 +52,12 @@
 			<div class="board" id="board"></div>
 			<div class="clock right" id="clock-white">05:00</div>
 		</div>
-		<div id="status-container" style="display: block;">
-			<h1>Waiting for other player</h1>
+		<div id="status-container" class="home-container">
+			<h1>Games</h1>
+
+			<div id="games-container" class="games-container">
+
+			</div>
 		</div>
 
 		<div id="toast-container" class="toast-container">
