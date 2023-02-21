@@ -39,7 +39,7 @@ pub fn handle_request(
         Ok(e) => {
             match e.request_type.as_str() {
                 "create" => return create(peers, games, addr),
-                "join" => return join(peers, games, addr),
+                "join" => return join(text, peers, games, addr),
                 "move" => return move_(text, peers, games, addr),
                 "list_games" => return list_games(peers, games, addr),
                 _ => panic!()
