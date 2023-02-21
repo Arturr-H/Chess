@@ -14,6 +14,7 @@ use futures_util::future;
 use crate::ChessGames;
 
 /* Create game */
+#[allow(unused_must_use)]
 pub fn create(
     peers:MutexGuard<
         HashMap<
@@ -35,6 +36,16 @@ pub fn create(
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.push(game);
+
+    let found_games = match convert_to_games_response(&games) {
+        Some(e) => e,
+        None => return future::ok(())
+    };
+    write_all_origins(&peers, &Message::Text(json!({
+        "status": 200,
+        "type": "update_games_listing",
+        "games": found_games
+    }).to_string()));
 
     /* Write the request origin */
     for recp in peers
@@ -59,7 +70,9 @@ pub fn create(
 }
 
 /* Join game */
+#[allow(unused_must_use)]
 pub fn join(
+    text: &str,
     peers:MutexGuard<
         HashMap<
             SocketAddr,
@@ -69,15 +82,32 @@ pub fn join(
         >
     >,
     games: ChessGames,
-    addr: SocketAddr
+    addr: SocketAddr,
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
+
+    /* Respond with this struct */
+    #[derive(Deserialize)]
+    struct Request {
+        game_id: String,
+    }
+
+    /* Parse request */
+    let req = match serde_json::from_str::<Request>(text) {
+        Ok(e) => e,
+        Err(_) => return write_origin(&peers, &[addr], &Message::Text(json!({ "status": 403, "message": "Couldn't parse request" }).to_string()))
+    };
+
+    let found_games = match convert_to_games_response(&games) {
+        Some(e) => e,
+        None => return future::ok(())
+    };
 
     /* Find game */
     for game in match games.lock() {
         Ok(e) => e,
         Err(_) => return future::ok(())
     }.iter_mut() {
-        if !game.occupied() {
+        if !game.occupied() && game.id() == &req.game_id {
             match game.insert_player(addr) {
                 Ok(_) => (),
                 Err(_) => continue
@@ -97,6 +127,12 @@ pub fn join(
                 }).to_string()
             );
             
+            write_all_origins(&peers, &Message::Text(json!({
+                "status": 200,
+                "type": "update_games_listing",
+                "games": found_games.iter().filter(|e| &e.id != game.id()).collect::<Vec<&GameInfo>>()
+            }).to_string()));
+
             /* Write the request origin */
             return write_origin(&peers, &[
                 *game.black().unwrap(),
@@ -317,28 +353,9 @@ pub fn list_games(
     games: ChessGames,
     addr: SocketAddr
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
-    let mut found_games: Vec<GameInfo> = Vec::new();
-
-    /* Respond with this struct */
-    #[derive(Serialize)]
-    struct GameInfo {
-        id: String,
-        creator: String,
-        minutes: u128
-    }
-
-    /* Find game */
-    for game in match games.lock() {
-        Ok(e) => e,
-        Err(_) => return future::ok(())
-    }.iter() {
-        if !game.occupied() {
-            found_games.push(GameInfo {
-                id: game.id().to_string(),
-                minutes: game.minutes(),
-                creator: String::from("Unknown creator")
-            });
-        };
+    let found_games = match convert_to_games_response(&games) {
+        Some(e) => e,
+        None => return future::ok(())
     };
 
     return write_origin(&peers, &[addr], 
@@ -351,7 +368,6 @@ pub fn list_games(
         )
     )
 }
-
 
 /* Write to origin */
 fn write_origin(
@@ -377,4 +393,57 @@ fn write_origin(
     };
 
     future::ok(())
+}
+
+/* Write to all origins */
+fn write_all_origins(
+    peers:&MutexGuard<
+        HashMap<
+            SocketAddr,
+            UnboundedSender<
+                Message
+            >
+        >
+    >,
+    message: &Message
+) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
+    for recp in peers
+        .iter()
+        .map(|(_, ws_sink)| ws_sink) {
+        recp.unbounded_send(
+            message.clone()
+        ).ok();
+    };
+
+    future::ok(())
+}
+
+/* Respond with this struct */
+#[derive(Serialize)]
+struct GameInfo {
+    id: String,
+    creator: String,
+    minutes: u128
+}
+
+/* Convert games into response */
+fn convert_to_games_response(games: &ChessGames) -> Option<Vec<GameInfo>> {
+
+    let mut found_games: Vec<GameInfo> = Vec::new();
+
+    /* Find game */
+    for game in match games.lock() {
+        Ok(e) => e,
+        Err(_) => return None
+    }.iter() {
+        if !game.occupied() {
+            found_games.push(GameInfo {
+                id: game.id().to_string(),
+                minutes: game.minutes(),
+                creator: String::from("Unknown creator")
+            });
+        };
+    };
+
+    Some(found_games)
 }
