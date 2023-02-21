@@ -1,6 +1,6 @@
 /* Imports */
-use serde_derive::Deserialize;
-use chess::{game::{Game, self}, piece::Color};
+use serde_derive::{Deserialize, Serialize};
+use chess::{game::{Game, self}, piece::Color, board::Board};
 use serde_json::json;
 use std::{
     collections::HashMap,
@@ -28,7 +28,7 @@ pub fn create(
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
 
     /* Create game */
-    let game = Game::new(addr);
+    let game = Game::new(addr, 5); // TODO: Change 5
     let is_white = game.white().is_some();
 
     match games.lock() {
@@ -303,6 +303,55 @@ pub fn move_(
 
     future::ok(())
 }
+
+/* List available games */
+pub fn list_games(
+    peers:MutexGuard<
+        HashMap<
+            SocketAddr,
+            UnboundedSender<
+                Message
+            >
+        >
+    >,
+    games: ChessGames,
+    addr: SocketAddr
+) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
+    let mut found_games: Vec<GameInfo> = Vec::new();
+
+    /* Respond with this struct */
+    #[derive(Serialize)]
+    struct GameInfo {
+        id: String,
+        creator: String,
+        minutes: u128
+    }
+
+    /* Find game */
+    for game in match games.lock() {
+        Ok(e) => e,
+        Err(_) => return future::ok(())
+    }.iter() {
+        if !game.occupied() {
+            found_games.push(GameInfo {
+                id: game.id().to_string(),
+                minutes: game.minutes(),
+                creator: String::from("Unknown creator")
+            });
+        };
+    };
+
+    return write_origin(&peers, &[addr], 
+        &Message::Text(
+            json!({
+                "status": 200,
+                "type": "games_listing",
+                "games": found_games
+            }).to_string()
+        )
+    )
+}
+
 
 /* Write to origin */
 fn write_origin(
