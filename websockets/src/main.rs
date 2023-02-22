@@ -23,6 +23,8 @@ use futures_util::{ future, pin_mut, stream::TryStreamExt, StreamExt };
 use tokio::net::{ TcpListener, TcpStream };
 use tokio_tungstenite::tungstenite::protocol::Message;
 
+use crate::methods::{convert_to_games_response, write_origin, write_all_origins};
+
 /* Constants */
 const ADDRESS: &'static str = "127.0.0.1";
 const PORT: u16 = 8081;
@@ -49,6 +51,7 @@ async fn main() {
     }
 }
 
+#[allow(unused_must_use)]
 async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: TcpStream, addr: SocketAddr) {
     let ws_stream = match tokio_tungstenite::accept_async(raw_stream).await {
         Ok(e) => e,
@@ -85,4 +88,46 @@ async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: Tcp
 
     /* Remove peer */
     peer_map.lock().unwrap().remove(&addr);
+
+    /* Update games listing */
+    let player_left_message = &Message::Text(json!({
+        "type": "player_leave"
+    }).to_string());
+
+    match games.lock() {
+        Ok(mut e) => {
+            for index in 0..e.len() {
+                if let Some(black) = e[index].black() {
+                    if black == &addr {
+                        if let Some(white) = e[index].white() {
+
+                            /* Send to white */
+                            write_origin(&peer_map.lock().unwrap(), &[*white], player_left_message);
+                        }
+
+                        /* Remove game */
+                        e.remove(index);
+                    }
+                }else if let Some(white) = e[index].white() {
+                    if white == &addr {
+                        if let Some(black) = e[index].black() {
+                            /* Send to black */
+                            write_origin(&peer_map.lock().unwrap(), &[*black], player_left_message);
+                        }
+
+                        /* Remove game */
+                        e.remove(index);
+                    }
+                }
+            }
+        },
+        Err(_) => return
+    };
+
+    let games = convert_to_games_response(&games);
+    write_all_origins(&peer_map.lock().unwrap(), &Message::Text(json!({
+        "status": 200,
+        "type": "update_games_listing",
+        "games": games
+    }).to_string()));
 }
