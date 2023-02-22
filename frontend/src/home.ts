@@ -5,6 +5,7 @@ const GAMES_CONTAINER = document.getElementById("games-container");
 const SELECTING_GRID = document.getElementById("selecting-grid");
 const CONTROLLER_GHOST_PIECE = document.getElementById("controller-ghost-piece");
 const GAMES_LISTING_CONTAINER = document.getElementById("games-listing-container");
+const INFO_MESSAGE = document.getElementById("info-message");
 
 /* Mutable */
 let is_dragging_controller = false;
@@ -55,8 +56,8 @@ const display_games = (games: Array<GameInfo>) => {
 const knight_places = [
     [[0, 1], "½"],
     [[1, 0], "1"],
-    [[4, 1], "2"],
-    [[3, 0], "5"],
+    [[3, 0], "2"],
+    [[4, 1], "5"],
     [[4, 3], "10"],
     [[3, 4], "15"],
     [[1, 4], "20"],
@@ -66,6 +67,7 @@ const generate_minutes_selection_grid = () => {
     SELECTING_GRID!.innerHTML = "";
     controller_image = "/pieces/white/knight.svg";
     controlled_piece_name = "knight";
+    INFO_MESSAGE!.innerText = "How many minutes should each player have?";
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
