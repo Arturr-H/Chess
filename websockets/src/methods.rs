@@ -370,7 +370,7 @@ pub fn list_games(
 }
 
 /* Write to origin */
-fn write_origin(
+pub fn write_origin(
     peers:&MutexGuard<
         HashMap<
             SocketAddr,
@@ -396,7 +396,7 @@ fn write_origin(
 }
 
 /* Write to all origins */
-fn write_all_origins(
+pub fn write_all_origins(
     peers:&MutexGuard<
         HashMap<
             SocketAddr,
@@ -420,14 +420,14 @@ fn write_all_origins(
 
 /* Respond with this struct */
 #[derive(Serialize)]
-struct GameInfo {
+pub struct GameInfo {
     id: String,
     creator: String,
     minutes: u128
 }
 
 /* Convert games into response */
-fn convert_to_games_response(games: &ChessGames) -> Option<Vec<GameInfo>> {
+pub fn convert_to_games_response(games: &ChessGames) -> Option<Vec<GameInfo>> {
 
     let mut found_games: Vec<GameInfo> = Vec::new();
 
