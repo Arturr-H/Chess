@@ -7,7 +7,7 @@ const STATUS_CONTAINER: HTMLElement | null = document.getElementById("status-con
 const TOAST_CONTAINER: HTMLElement | null = document.getElementById("toast-container");
 const CLOCK_WHITE: HTMLElement | null = document.getElementById("clock-white");
 const CLOCK_BLACK: HTMLElement | null = document.getElementById("clock-black");
-
+const WAITING_FOR_PLAYER: HTMLElement | null = document.getElementById("waiting-for-player-container");
 
 /* Constants */
 const GRID_SIZE: number = 8;
@@ -239,6 +239,7 @@ ws.onmessage = (e) => {
             };
             GAME_CONTAINER!.style.display = "inline-flex";
             STATUS_CONTAINER!.style.display = "none";
+            WAITING_FOR_PLAYER!.style.display = "none";
 
             draw_grid(pieces);
             game_id = data.game_id;
@@ -294,7 +295,9 @@ ws.onopen = (e) => {
 
 }
 
-const CREATE_SHIT = () => {
+const CREATE_GAME = () => {
+    WAITING_FOR_PLAYER!.style.display = "flex";
+    STATUS_CONTAINER!.style.display = "none";
     ws.send(JSON.stringify({
         "request_type": "create",
     }));
