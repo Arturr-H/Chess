@@ -281,6 +281,11 @@ ws.onmessage = (e) => {
         case "games_listing":
             display_games(data.games);
             break;
+
+        case "player_leave":
+            alert("Opponent left the game");
+            location.href = "/";
+            break;
             
         default:
             break;
