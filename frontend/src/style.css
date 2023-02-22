@@ -224,10 +224,10 @@ html, body {
     width: 50vmin;
     height: 50vmin;
 
-    left: 50%;
+    /* left: 50%;
     top: 50%;
     position: absolute;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
 }.selecting-grid > .inner-tile {
     max-width: 100%;
     max-height: 100%;
@@ -245,6 +245,8 @@ html, body {
     display: flex;
     justify-content: center;
         align-items: center;
+
+    box-shadow: 0 0 4vmin 1vmin rgba(255, 255, 255, 0.315), inset 0 0 1vmin 1vmin rgb(214, 214, 214);
 }.selecting-grid > .inner-tile.highlight > p {
     color: #9a9a9a;
     margin: 0;
@@ -271,6 +273,9 @@ html, body {
 
     flex-direction: column;
     background: #050505;
+}.home-container > p {
+    color: #333;
+    font-size: 4vmin;
 }.games-listing-container {
     width: 100vw;
     height: 100vh;
@@ -300,10 +305,11 @@ html, body {
     outline: 0.6vmin solid #fff;
     border: 0.6vmin solid #000;
 
-    width: 10vmin;
-    height: 10vmin;
+    width: 4vmin;
+    height: 4vmin;
 
     animation: rotate-90 1s ease-in-out infinite;
+    box-shadow: 0 0 4vmin 1vmin rgba(255, 255, 255, 0.315), inset 0 0 1vmin 1vmin rgb(214, 214, 214);
 }
 
 /* Keyframes */
