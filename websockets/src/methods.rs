@@ -16,6 +16,7 @@ use crate::ChessGames;
 /* Create game */
 #[allow(unused_must_use)]
 pub fn create(
+    text: &str,
     peers:MutexGuard<
         HashMap<
             SocketAddr,
@@ -27,9 +28,19 @@ pub fn create(
     games: ChessGames,
     addr: SocketAddr
 ) -> futures_util::future::Ready<Result<(), tokio_tungstenite::tungstenite::Error>> {
+    #[derive(Deserialize)]
+    struct Request {
+        minutes: f64,
+    }
+
+    /* Parse request */
+    let req = match serde_json::from_str::<Request>(text) {
+        Ok(e) => e,
+        Err(_) => return write_origin(&peers, &[addr], &Message::Text(json!({ "status": 403, "message": "Couldn't parse request" }).to_string()))
+    };
 
     /* Create game */
-    let game = Game::new(addr, 5); // TODO: Change 5
+    let game = Game::new(addr, req.minutes);
     let is_white = game.white().is_some();
 
     match games.lock() {
@@ -423,7 +434,7 @@ pub fn write_all_origins(
 pub struct GameInfo {
     id: String,
     creator: String,
-    minutes: u128
+    minutes: f64
 }
 
 /* Convert games into response */
