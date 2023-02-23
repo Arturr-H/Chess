@@ -38,7 +38,7 @@ pub fn handle_request(
     match serde_json::from_str::<RequestType>(text) {
         Ok(e) => {
             match e.request_type.as_str() {
-                "create" => return create(peers, games, addr),
+                "create" => return create(text, peers, games, addr),
                 "join" => return join(text, peers, games, addr),
                 "move" => return move_(text, peers, games, addr),
                 "list_games" => return list_games(peers, games, addr),
