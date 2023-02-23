@@ -12,6 +12,7 @@ let is_dragging_controller = false;
 let controller_image: string = "/pieces/white/knight.svg";
 let controlled_piece: HTMLElement | null = null;
 let controlled_piece_name: string = "";
+let minutes = 0;
 
 /* Interfaces */
 interface GameInfo {
@@ -54,14 +55,14 @@ const display_games = (games: Array<GameInfo>) => {
 
 /* Generate minutes selection */
 const knight_places = [
-    [[0, 1], "½"],
-    [[1, 0], "1"],
-    [[3, 0], "2"],
-    [[4, 1], "5"],
-    [[4, 3], "10"],
-    [[3, 4], "15"],
-    [[1, 4], "20"],
-    [[0, 3], "30"]
+    [[0, 1], "½", "0.5"],
+    [[1, 0], "1", "1.0"],
+    [[3, 0], "2", "2.0"],
+    [[4, 1], "5", "5.0"],
+    [[4, 3], "10", "1.0"],
+    [[3, 4], "15", "15.0"],
+    [[1, 4], "20", "20.0"],
+    [[0, 3], "30", "30.0"]
 ];
 const generate_minutes_selection_grid = () => {
     SELECTING_GRID!.innerHTML = "";
@@ -95,6 +96,7 @@ const generate_minutes_selection_grid = () => {
                 knight.src = "/pieces/white/knight.svg";
                 knight.draggable = false;
                 knight.style.userSelect = "none";
+                knight.style.cursor = "grab";
                 controlled_piece = knight;
 
                 /* Move knight */
@@ -151,6 +153,7 @@ const generate_create_or_join_grid = () => {
                 rook.src = "/pieces/white/rook.svg";
                 rook.draggable = false;
                 rook.style.userSelect = "none";
+                rook.style.cursor = "grab";
                 controlled_piece = rook;
 
                 /* Move rook */
@@ -177,7 +180,10 @@ const generate_create_or_join_grid = () => {
 
 /* Move knight in minutes select */
 const move_knight = (to: number[]) => {
-    knight_places.forEach(e => {
+    knight_places.forEach((e, index) => {
+        if (to.toString() == knight_places[index][0].toString()) {
+            minutes = parseFloat(knight_places[index][2].toString());
+        }
         console.log(`minute-tile-${e[0][0]}-${e[0][1]}`);
         let tile = document.getElementById(`minute-tile-${e[0][0]}-${e[0][1]}`);
         tile?.classList.add("fade-out");
@@ -201,7 +207,7 @@ const move_knight = (to: number[]) => {
         WAITING_FOR_PLAYER!.style.display = "flex";
         WAITING_FOR_PLAYER!.classList.add("fade-in");
         STATUS_CONTAINER!.style.display = "none";
-        CREATE_GAME();
+        CREATE_GAME(minutes);
     }, 1000);
 }
 const move_rook = (to: number[]) => {
