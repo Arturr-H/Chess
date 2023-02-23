@@ -154,6 +154,11 @@ BOARD?.addEventListener("mousedown", (e) => {
     dragging_piece = get_piece(pieces, x, y);
     is_dragging = true;
     GHOST_PIECE!.style.display = "block";
+    GHOST_PIECE!.style.background = "url(" + get_image_src(dragging_piece?.name!, dragging_piece?.color!)! + ")";
+    GHOST_PIECE!.style.backgroundSize = "contain";
+    GHOST_PIECE!.style.left = `${e.x}px`;
+    GHOST_PIECE!.style.top = `${e.y}px`;
+
 })
 BOARD?.addEventListener("mouseup", (e) => {
     draw_grid(pieces);
@@ -167,11 +172,8 @@ BOARD?.addEventListener("mouseup", (e) => {
     }
 })
 BOARD?.addEventListener("mousemove", (e) => {
-    GHOST_PIECE!.style.display = "block";
     GHOST_PIECE!.style.left = `${e.x}px`;
     GHOST_PIECE!.style.top = `${e.y}px`;
-    GHOST_PIECE!.style.background = "url(" + get_image_src(dragging_piece?.name!, dragging_piece?.color!)! + ")";
-    GHOST_PIECE!.style.backgroundSize = "contain";
 })
 
 /* Move piece */
@@ -241,6 +243,10 @@ ws.onmessage = (e) => {
             STATUS_CONTAINER!.style.display = "none";
             WAITING_FOR_PLAYER!.style.display = "none";
 
+            /* Update clocks */
+            update_clock("white", data.white_time_left, data.turn);
+            update_clock("black", data.black_time_left, data.turn);
+
             draw_grid(pieces);
             game_id = data.game_id;
             break;
@@ -295,16 +301,13 @@ ws.onmessage = (e) => {
 ws.onclose = (e) => {
     alert("Connection closed!");
 }
-ws.onopen = (e) => {
 
-
-}
-
-const CREATE_GAME = () => {
+const CREATE_GAME = (minutes: number) => {
     WAITING_FOR_PLAYER!.style.display = "flex";
     STATUS_CONTAINER!.style.display = "none";
     ws.send(JSON.stringify({
         "request_type": "create",
+        "minutes": minutes
     }));
 }
 
