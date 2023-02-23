@@ -182,21 +182,22 @@ html, body {
     box-sizing: border-box;
     padding: 2vmin;
 
-    border: 0.2vmin solid #ccc;
-    border-radius: 2.5vmin;
-
     display: inline-flex;
     flex-direction: column;
     gap: 1vmin;
 
+    outline: 0.6vmin solid #fff;
+    border: 0.6vmin solid #000;
+
+    box-shadow: 0 0 4vmin 1vmin rgba(255, 255, 255, 0.315), inset 0 0 1vmin 1vmin rgb(214, 214, 214);
 }.games-container > .game-section {
     width: 100%;
     min-height: 6vmin;
     display: block;
-    background: #fff;
+    background: #000;
 
-    border: 0.2vmin solid #ccc;
-    border-radius: 0.75vmin;
+    outline: 0.6vmin solid #000;
+    border: 0.6vmin solid #fff;
 
     display: flex;
     flex-direction: row;
@@ -212,7 +213,7 @@ html, body {
 
     color: #999;
 }.games-container > .game-section > p.highlight {
-    color: #000;
+    color: #fff;
 }
 
 /* Selecting grid */
