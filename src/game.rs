@@ -20,7 +20,7 @@ pub struct Game {
     id: String,
 
     /* Amount of minutes for each player */
-    minutes: u128,
+    minutes: f64,
 
     /* Ending time for each player (MS) */
     white_time_remaining: u128,
@@ -40,9 +40,9 @@ impl Game {
     /// Create a new `Game` struct. The `player`
     /// parameter is the uuid of the player who
     /// created the game.
-    pub fn new(player: SocketAddr, minutes: u128) -> Self {
+    pub fn new(player: SocketAddr, minutes: f64) -> Self {
         let player_1_white = rand::thread_rng().gen_bool(0.5f64);
-        let five_minutes = 1000 * 60 * 5;
+        let time_remaining = (1000.0 * 60.0 * minutes) as u128;
 
         /* Shared fields */
         let shared_fields = Self {
@@ -51,8 +51,8 @@ impl Game {
 
             id: uuid::Uuid::new_v4().as_hyphenated().to_string(),
             board: Board::new(),
-            white_time_remaining: five_minutes,
-            black_time_remaining: five_minutes,
+            white_time_remaining: time_remaining,
+            black_time_remaining: time_remaining,
             black_latest_time: get_unix_time(),
             white_latest_time: get_unix_time(),
             white_has_moved: false,
@@ -132,8 +132,8 @@ impl Game {
     pub fn black_has_moved_mut(&mut self) -> &mut bool { &mut self.black_has_moved }
 
     /* Minutes */
-    pub fn minutes(&self) -> u128 { self.minutes }
-    pub fn minutes_mut(&mut self) -> &mut u128 { &mut self.minutes }
+    pub fn minutes(&self) -> f64 { self.minutes }
+    pub fn minutes_mut(&mut self) -> &mut f64 { &mut self.minutes }
 }
 
 pub fn get_unix_time() -> u128 {
