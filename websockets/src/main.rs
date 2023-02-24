@@ -85,14 +85,22 @@ async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: Tcp
 
     /* Run recv / broadcast */
     future::select(broadcast_incoming, receive_from_others).await;
-
+    
     /* Remove peer */
-    peer_map.lock().unwrap().remove(&addr);
+    match peer_map.lock() {
+        Ok(e) => e,
+        Err(_) => return
+    }.remove(&addr);
 
     /* Update games listing */
     let player_left_message = &Message::Text(json!({
         "type": "player_leave"
     }).to_string());
+
+    let peers = match peer_map.lock() {
+        Ok(e) => e,
+        Err(_) => return
+    };
 
     match games.lock() {
         Ok(mut e) => {
@@ -102,7 +110,7 @@ async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: Tcp
                         if let Some(white) = e[index].white() {
 
                             /* Send to white */
-                            write_origin(&peer_map.lock().unwrap(), &[*white], player_left_message);
+                            write_origin(&peers, &[*white], player_left_message);
                         }
 
                         /* Remove game */
@@ -112,7 +120,7 @@ async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: Tcp
                     if white == &addr {
                         if let Some(black) = e[index].black() {
                             /* Send to black */
-                            write_origin(&peer_map.lock().unwrap(), &[*black], player_left_message);
+                            write_origin(&peers, &[*black], player_left_message);
                         }
 
                         /* Remove game */
@@ -125,7 +133,7 @@ async fn handle_connection(peer_map: PeerMap, games: ChessGames, raw_stream: Tcp
     };
 
     let games = convert_to_games_response(&games);
-    write_all_origins(&peer_map.lock().unwrap(), &Message::Text(json!({
+    write_all_origins(&peers, &Message::Text(json!({
         "status": 200,
         "type": "update_games_listing",
         "games": games
