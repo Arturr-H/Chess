@@ -42,7 +42,7 @@ pub fn handle_request(
                 "join" => return join(text, peers, games, addr),
                 "move" => return move_(text, peers, games, addr),
                 "list_games" => return list_games(peers, games, addr),
-                _ => panic!()
+                _ => ()
             }
         },
         Err(_) => {}
